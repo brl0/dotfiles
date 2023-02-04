@@ -1,0 +1,6 @@
+# BRL
+echo "start processing .bash_login"
+if [ -r ~/.profile ]; then . ~/.profile; fi
+case "$-" in *i*) if [ -r ~/.bashrc ]; then . ~/.bashrc; fi;; esac
+echo "done processing .bash_login"
+# /BRL
