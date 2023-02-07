@@ -27,23 +27,21 @@ echo 'script begin'
 # ln -s /mnt/e/ ~/e
 
 pushd ~
-xargs -a .brl.wsl_links.txt -i -r echo {} | xargs -r -d -t "|" ln -s
+xargs -a ~/dotfiles/.brl/wsl_links.txt -i -r echo {} | xargs -r -n 2 ln -s
 
-sudo ln -s /mnt/c/Users/b_r_l/OneDrive/wsl/wsl.conf /etc/wsl.conf
+sudo ln -s ~/wsl/wsl.conf /etc/wsl.conf
 
 chmod -R +x ~/code
 
 mkdir ~/repos
 
-git config --global user.name "Brian Larsen"
-git config --global user.email "B_R_L@hotmail.com"
-git config --global core.editor nano
-
-cp -r /mnt/c/Users/b_r_l/.ssh ~/
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/id_*
-chmod 644 ~/.ssh/id_*.pub
-
 popd
+
+# git config --global user.name "Brian Larsen"
+# git config --global user.email "B_R_L@hotmail.com"
+# git config --global core.editor nano
+
+~/dotfiles/.brl/scripts/copy_ssh.sh
+
 echo 'script complete'
 # END

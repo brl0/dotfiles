@@ -1,0 +1,66 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+        args:
+          - --fix=lf
+      - id: pretty-format-json
+        types:
+          - file
+        files: \.(json|pgerd)$
+        args:
+          - --autofix
+      - id: trailing-whitespace
+        args:
+          - --markdown-linebreak-ext=md
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.6.0
+    hooks:
+      - id: pretty-format-ini
+        args:
+          - --autofix
+  - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev: 0.2.2
+    hooks:
+      - id: yamlfmt
+        files: ^.*\.(yaml|yml)$
+        exclude: ^\.pre-commit-config\.yaml$
+        args:
+          - --mapping=4
+          - --sequence=4
+          - --offset=2
+          - --width=500
+  - repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+      - id: black
+        args:
+          - --target-version=py310
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args:
+          - --profile=black
+          - --filter-files
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.3.1
+    hooks:
+      - id: pyupgrade
+        args:
+          - --py310-plus
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v2.4.0
+    hooks:
+      - id: add-trailing-comma
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.6.0-1
+    hooks:
+      - id: shfmt-docker
+default_language_version:
+    python: python3.10

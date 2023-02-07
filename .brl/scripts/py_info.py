@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # pylint: disable=multiple-statements
 
@@ -52,6 +51,7 @@ _ARGS_PROPS = {
     "extra": extra_info,
 }
 
+
 # TODO print as pretty table
 def print_eval(stmts):
     """Evaluate a list of statements."""
@@ -67,19 +67,30 @@ def print_eval(stmts):
 
 
 if __name__ == "__main__":
-
     print("Running Python version: " + sys.version)
     print("Current directory: " + os.getcwd())
 
     parser = argparse.ArgumentParser(description="Python version info.")
     parser.add_argument(
-        "-v", "--version", default=True, action="store_true", help="print version",
+        "-v",
+        "--version",
+        default=True,
+        action="store_true",
+        help="print version",
     )
     parser.add_argument(
-        "-s", "--system", default=False, action="store_true", help="print system info",
+        "-s",
+        "--system",
+        default=False,
+        action="store_true",
+        help="print system info",
     )
     parser.add_argument(
-        "-e", "--extra", default=False, action="store_true", help="print extra info",
+        "-e",
+        "--extra",
+        default=False,
+        action="store_true",
+        help="print extra info",
     )
     args = parser.parse_args()
 

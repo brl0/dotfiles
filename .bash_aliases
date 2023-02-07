@@ -3,7 +3,7 @@
 echo 'processing ~/.bash_aliases'
 
 mkcd() {
-  test -d "$1" || mkdir -p -- "$1" && cd -P -- "$1" || return
+        test -d "$1" || mkdir -p -- "$1" && cd -P -- "$1" || return
 }
 
 alias python=python3
@@ -20,38 +20,26 @@ function mkalias_code() { code-insiders "$@"; }
 alias edit='mkalias_code'
 
 alias edit-dots='mkalias_edit-dots'
-function mkalias_edit-dots() {
-  # TODO: add args to dotfiles
-  # echo $@ | sed 's/ /\n/g' | xargs -i -n 1 echo "{}" >> ~/.brl.dotfiles.txt
-  pushd ~ || return
-  xargs -a ~/.brl.dotfiles.txt code-insiders -n "$@"
-  popd || return
-}
+function mkalias_edit-dots() { code-insiders ~/dotfiles/ "$@"; }
 alias rc='mkalias_edit-dots'
 
 # alias rc='mkalias_rc'
 # function mkalias_rc(){ code ~/.bashrc "$@"; }
 
-alias datum='mkalias_datum'
-function mkalias_datum() { cd ~/repos/datum/ && conda activate datum && code-insiders ~/repos/datum/ "$@"; }
-
 alias upg='mkalias_upg'
-function mkalias_upg() { bash ~/.brl.upgrades.sh; }
+function mkalias_upg() { bash ~/dotfiles/.brl/upgrades.sh; }
 
 alias clone='mkalias_clone'
 function mkalias_clone() {
-  pushd ~/repos || return
-  gh repo clone "$@";
-  popd || return
+        pushd ~/repos || return
+        gh repo clone "$@"
+        popd || return
 }
 
 alias chrome='mkalias_chrome'
 function mkalias_chrome() { "$BROWSER" "$@"; }
 alias browse='mkalias_chrome'
 alias browser='mkalias_chrome'
-
-alias maxi='mkalias_maxi'
-function mkalias_maxi() { conda activate /home/brl0/maxiconda/envs/maxiconda; }
 
 alias mambe='mkalias_mambe'
 function mkalias_mambe() { mamba "$@"; }
@@ -118,24 +106,24 @@ function sect_date() { p_sect && p_dt "$@"; }
 alias s_date='sect_date'
 
 function cmd_date() {
-  ("$@" && sect_date 'Completed') || sect_date 'FAILED!';
+        ("$@" && sect_date 'Completed') || sect_date 'FAILED!'
 }
 
 alias run='mkalias_run'
 function mkalias_run() {
-  clear
-  p_sect
-   _CMD="$(printf " %q" "${@}")"
-  printf "Command:\n$section\n%s\n$section\n" "$_CMD"
-  print_date "Starting"
-  t="$(which time)"
-  b="$(which bash)"
-  # ($t -p "$b" -c "($_CMD && $sect_cmd) || $sect_cmd" &&
-  #   sect_date "Completed") || (sect_date "FAILED!")
-  # echo "$t" -p "$b" -c "($_CMD && $sect_cmd) || $sect_cmd"
-  # "$t" -p "$b" -c "$*; $sect_cmd" && \
-  "$t" -p "$b" -c "$_CMD; $sect_cmd" && \
-  sect_date 'Completed' || (p_sect && sect_date 'FAILED!');
+        clear
+        p_sect
+        _CMD="$(printf " %q" "${@}")"
+        printf "Command:\n$section\n%s\n$section\n" "$_CMD"
+        print_date "Starting"
+        t="$(which time)"
+        b="$(which bash)"
+        # ($t -p "$b" -c "($_CMD && $sect_cmd) || $sect_cmd" &&
+        #   sect_date "Completed") || (sect_date "FAILED!")
+        # echo "$t" -p "$b" -c "($_CMD && $sect_cmd) || $sect_cmd"
+        # "$t" -p "$b" -c "$*; $sect_cmd" && \
+        "$t" -p "$b" -c "$_CMD; $sect_cmd" &&
+                sect_date 'Completed' || (p_sect && sect_date 'FAILED!')
 }
 
 typeset -xf p_dt
@@ -149,19 +137,19 @@ function mkalias_repo() { pushd "$HOME/repos/$*" || return; }
 
 alias coder='mkalias_coder'
 function mkalias_coder() {
-  repo "$@"
-  code .;
+        repo "$@"
+        code .
 }
 
 _repo() {
-  local cur=${COMP_WORDS[COMP_CWORD]}
-  _TARGET="$HOME/repos"
-  IFS=$'\n' tmp=($(compgen -W "$(ls $_TARGET)" -- $cur))
-  COMPREPLY=("${tmp[@]// /\ }")
-  # check if completion array is not empty
-  if [ ${#tmp[@]} -ne 0 ]; then
-    COMPREPLY=($(printf "%q\n" "${tmp[@]}"))
-  fi
+        local cur=${COMP_WORDS[COMP_CWORD]}
+        _TARGET="$HOME/repos"
+        IFS=$'\n' tmp=($(compgen -W "$(ls $_TARGET)" -- $cur))
+        COMPREPLY=("${tmp[@]// /\ }")
+        # check if completion array is not empty
+        if [ ${#tmp[@]} -ne 0 ]; then
+                COMPREPLY=($(printf "%q\n" "${tmp[@]}"))
+        fi
 }
 
 complete -o nospace -F _repo repo

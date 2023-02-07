@@ -27,11 +27,17 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
+# set PATH so it includes user's scripts if it exists
+if [ -d "$HOME/scripts" ] ; then
+    PATH="$HOME/scripts:$PATH"
+fi
+
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
+# Set PATH, MANPATH, etc., for Homebrew.
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 eval "$(starship init bash)"
 eval "$(navi widget bash)"
@@ -55,7 +61,7 @@ export NVM_DIR="$HOME/.nvm"
 
 if [ -e /home/brl0/.nix-profile/etc/profile.d/nix.sh ]; then . /home/brl0/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
-PATH=$PATH:$(go env GOPATH)/bin
+# PATH=$PATH:$(go env GOPATH)/bin
 export PATH
 
 echo 'finished ~/.profile'

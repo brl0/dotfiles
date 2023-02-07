@@ -1,0 +1,70 @@
+[tool.black]
+line-length               = 88
+skip-string-normalization = false
+target_version            = ['py310']
+
+[tool.isort]
+color_output                   = true
+ensure_newline_before_comments = true
+force_single_line              = false
+include_trailing_comma         = true
+known_local_folder             = [".brl"]
+line_length                    = 88
+lines_after_imports            = 2
+lines_before_imports           = 1
+only_modified                  = true
+profile                        = "black"
+py_version                     = 310
+skip_gitignore                 = true
+star_first                     = true
+use_parentheses                = true
+verbose                        = false
+
+[tool.pyright]
+exclude = [
+    "**/__pycache__",
+    "**/.git",
+    "**/.hypothesis",
+    "**/.ipynb_checkpoints",
+    "**/.mypy_cache",
+    "**/.nox",
+    "**/.pytest_cache",
+    "**/*.egg-info",
+]
+reportMissingImports = true
+reportMissingTypeStubs = false
+reportUnsupportedDunderAll = false
+pythonVersion = "3.10"
+pythonPlatform = "Linux"
+
+[tool.pylama.linter.pycodestyle]
+max_line_length = 88
+
+[tool.pylama.linter.pylint]
+max_line_length = 88
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = ["ALL"]
+ignore = [
+  "D203",
+  "D213",
+  "I001",
+  "PT004",
+  "T201",
+]
+unfixable = [
+  "ERA001",
+  "F401",
+  "I001",
+  "T201",
+  "T203",
+  "UP009",
+]
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+
+[tool.ruff.flake8-annotations]
+allow-star-arg-any = true
