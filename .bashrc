@@ -205,7 +205,7 @@ source_if_exists "/home/brl0/google-cloud-sdk/completion.bash.inc"
 # fi
 
 # "C:\Program Files\Google\Chrome\Application\chrome.exe"
-BROWSER=$(wslpath "C:\Program Files\Google\Chrome Beta\Application\chrome.exe")
+BROWSER="$(wslpath "C:\Program Files\Google\Chrome Beta\Application\chrome.exe")"
 export BROWSER
 
 HISTIGNORE=$(alias | cut -d "=" -f1 | cut -d " " -f2 | xargs echo | sed 's/ /\:/g')
