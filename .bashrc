@@ -185,17 +185,17 @@ source_if_exists ~/.fzf.bash
 
 source_if_exists "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/bashrc"
 
-trap 'source /home/brl0/.bashrc' USR1
+trap 'source ~/.bashrc' USR1
 
 source_if_exists ~/.bash.d/cht.sh
 
-export DOTNET_ROOT=/snap/dotnet-sdk/current
+# export DOTNET_ROOT=/snap/dotnet-sdk/current
 
 # The next line updates PATH for the Google Cloud SDK.
-source_if_exists "/home/brl0/google-cloud-sdk/path.bash.inc"
+source_if_exists "~/google-cloud-sdk/path.bash.inc"
 
 # The next line enables shell command completion for gcloud.
-source_if_exists "/home/brl0/google-cloud-sdk/completion.bash.inc"
+source_if_exists "~/google-cloud-sdk/completion.bash.inc"
 
 # Check if ssh-agent is running, and if not, start it
 # if [ -z $(pgrep ssh-agent) ]; then
@@ -214,7 +214,11 @@ HISTIGNORE=$(echo "$HISTIGNORE" | sed 's/\:/\n/g' | sort -u | xargs echo | sed '
 HISTIGNORE="$HISTIGNORE:"
 export HISTIGNORE
 
-PATH="/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32:/mnt/c/Users/b_r_l/AppData/Local/Microsoft/WindowsApps:$PATH"
+for x in ~/scripts/autorun/*.env; do
+        source "$x"
+done
+
+# PATH="/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32:/mnt/c/Users/b_r_l/AppData/Local/Microsoft/WindowsApps:$PATH"
 PATH="$HOME/.local/bin:$PATH"
 # deduplicate PATH values
 PATH=$(echo "$PATH" | sed 's/:/\n/g' | awk '!x[$0]++' | xargs -i -n 1 echo "::{}::" | xargs echo | sed 's/:: ::/:/g' | sed 's/:://g')
@@ -224,16 +228,16 @@ export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
 
 # >>> mamba initialize >>>
 # !! Contents within this block are managed by 'mamba init' !!
-export MAMBA_EXE="/home/brl0/.local/bin/micromamba"
-export MAMBA_ROOT_PREFIX="/home/brl0/micromamba"
+export MAMBA_EXE="~/.local/bin/micromamba"
+export MAMBA_ROOT_PREFIX="~/micromamba"
 __mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --prefix "$MAMBA_ROOT_PREFIX" 2>/dev/null)"
 if [ $? -eq 0 ]; then
         eval "$__mamba_setup"
 else
-        if [ -f "/home/brl0/micromamba/etc/profile.d/micromamba.sh" ]; then
-                . "/home/brl0/micromamba/etc/profile.d/micromamba.sh"
+        if [ -f "~/micromamba/etc/profile.d/micromamba.sh" ]; then
+                . "~/micromamba/etc/profile.d/micromamba.sh"
         else
-                export PATH="/home/brl0/micromamba/bin:$PATH" # extra space after export prevents interference from conda init
+                export PATH="~/micromamba/bin:$PATH" # extra space after export prevents interference from conda init
         fi
 fi
 unset __mamba_setup
@@ -241,14 +245,14 @@ unset __mamba_setup
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/brl0/micromamba/bin/conda' 'shell.bash' 'hook' 2>/dev/null)"
+__conda_setup="$('~/micromamba/bin/conda' 'shell.bash' 'hook' 2>/dev/null)"
 if [ $? -eq 0 ]; then
         eval "$__conda_setup"
 else
-        if [ -f "/home/brl0/micromamba/etc/profile.d/conda.sh" ]; then
-                . "/home/brl0/micromamba/etc/profile.d/conda.sh"
+        if [ -f "~/micromamba/etc/profile.d/conda.sh" ]; then
+                . "~/micromamba/etc/profile.d/conda.sh"
         else
-                export PATH="/home/brl0/micromamba/bin:$PATH"
+                export PATH="~/micromamba/bin:$PATH"
         fi
 fi
 unset __conda_setup

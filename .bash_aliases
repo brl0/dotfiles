@@ -16,15 +16,12 @@ function mkalias_docker_prune() { docker system prune -a -f --volumes "$@"; }
 alias docker_purge='mkalias_docker_prune'
 
 alias code='mkalias_code'
-function mkalias_code() { code-insiders "$@"; }
+function mkalias_code() { code-insiders -n "$@"; }
 alias edit='mkalias_code'
 
-alias edit-dots='mkalias_edit-dots'
-function mkalias_edit-dots() { code-insiders ~/dotfiles/ "$@"; }
-alias rc='mkalias_edit-dots'
-
-# alias rc='mkalias_rc'
-# function mkalias_rc(){ code ~/.bashrc "$@"; }
+alias edit-dots='mkalias_rc'
+function mkalias_rc() { code-insiders -n ~/dotfiles/ "$@"; }
+alias rc='mkalias_rc'
 
 alias upg='mkalias_upg'
 function mkalias_upg() { bash ~/dotfiles/.brl/upgrades.sh; }
@@ -33,6 +30,8 @@ alias clone='mkalias_clone'
 function mkalias_clone() {
         pushd ~/repos || return
         gh repo clone "$@"
+        folder="$(echo "$@" | cut -d '/' -f 2)"
+        code-insiders -n "$folder"
         popd || return
 }
 
@@ -82,11 +81,21 @@ alias hist='mkalias_uniqhist'
 alias unsort='mkalias_unsort'
 function mkalias_unsort() { awk '!x[$0]++' "$@"; }
 
-alias first='mkalias_first'
-function mkalias_first() { awk '{ print $1; }' "$@"; }
-
 alias ufirst='mkalias_ufirst'
-function mkalias_ufirst() { awk '{ print $1; }' "$@" | sort -u; }
+function mkalias_ufirst() { awk '!x[$1]++ { print $1; }' "$@"; }
+
+alias first='mkalias_first'
+function mkalias_first() { awk '{ print $1; }' "$@" | sort -u; }
+
+alias ulast='mkalias_ulast'
+function mkalias_ulast() { tac "$@" | awk '!x[$1]++' | tac; }
+
+alias xsh='mkalias_xsh'
+function mkalias_xsh() {
+        XPATH=$(echo "$PATH" | sed 's/:/\n/g' | awk '!x[$0]++' | xargs -i -n 1 echo "::{}::" | grep -v -e "/mnt/" | xargs echo | sed 's/:: ::/:/g' | sed 's/:://g')
+        XPATH="$XPATH:/mnt/c/WINDOWS/system32:/mnt/c/Users/b_r_l/AppData/Local/Programs/Microsoft VS Code Insiders/bin:/mnt/c/Users/b_r_l/AppData/Local/Programs/Microsoft VS Code/bin"
+        PATH="$XPATH" xonsh "$@"
+}
 
 section="----------------------------------------"
 
