@@ -2,7 +2,8 @@
 name = Brian Larsen
 email = B_R_L@hotmail.com
 [core]
-editor = code-insiders --wait                       # nano
+# editor = nano
+editor = code-insiders --wait
 # pager = diff-so-fancy | less --tabs=4 -RFX
 [push]
 default = current
@@ -36,4 +37,4 @@ tool = vscode
 [mergetool "vscode"]
 cmd = code-insiders --wait $MERGED
 [credential]
-helper = /mnt/c/Program\\ Files/Git/mingw64/bin/git-credential-manager-core.exe
+helper = /mnt/c/Program\\ Files/Git/mingw64/bin/git-credential-manager.exe

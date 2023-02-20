@@ -26,9 +26,9 @@ export HISTTIMEFORMAT='%F, %T '
 # append to the history file, don't overwrite it
 shopt -s histappend
 
-if [ -f ~/dotfiles/.brl/shopts.txt ]; then
+if [ -f "$HOME/dotfiles/.brl/shopts.txt" ]; then
         BRL_OPTS=$(
-                grep -vxE '[[:blank:]]*([#;].*)?' ~/dotfiles/.brl/shopts.txt |
+                grep -vxE '[[:blank:]]*([#;].*)?' "$HOME/dotfiles/.brl/shopts.txt" |
                         grep -o '^[^#]*' |
                         sort -u | xargs echo
         )
@@ -97,7 +97,7 @@ esac
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
-        test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+        test -r "$HOME/.dircolors" && eval "$(dircolors -b "$HOME/.dircolors")" || eval "$(dircolors -b)"
         alias ls='ls --color=auto'
         alias dir='dir --color=auto'
         alias vdir='vdir --color=auto'
@@ -121,10 +121,10 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
+# $HOME/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-source_if_exists ~/.bash_aliases
+source_if_exists "$HOME/.bash_aliases"
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -175,27 +175,27 @@ export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS="1"
 # export DOCKER_HOST=tcp://127.0.0.1:2375
 
 set -o allexport
-source_if_exists ~/.env
+source_if_exists "$HOME/.env"
 set +o allexport
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
-source_if_exists ~/.fzf.bash
+source_if_exists "$HOME/.fzf.bash"
 
 source_if_exists "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/bashrc"
 
-trap 'source ~/.bashrc' USR1
+trap 'source $HOME/.bashrc' USR1
 
-source_if_exists ~/.bash.d/cht.sh
+source_if_exists "$HOME/.bash.d/cht.sh"
 
 # export DOTNET_ROOT=/snap/dotnet-sdk/current
 
 # The next line updates PATH for the Google Cloud SDK.
-source_if_exists "~/google-cloud-sdk/path.bash.inc"
+source_if_exists "$HOME/google-cloud-sdk/path.bash.inc"
 
 # The next line enables shell command completion for gcloud.
-source_if_exists "~/google-cloud-sdk/completion.bash.inc"
+source_if_exists "$HOME/google-cloud-sdk/completion.bash.inc"
 
 # Check if ssh-agent is running, and if not, start it
 # if [ -z $(pgrep ssh-agent) ]; then
@@ -228,16 +228,16 @@ export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
 
 # >>> mamba initialize >>>
 # !! Contents within this block are managed by 'mamba init' !!
-export MAMBA_EXE="~/.local/bin/micromamba"
-export MAMBA_ROOT_PREFIX="~/micromamba"
+export MAMBA_EXE="$HOME/.local/bin/micromamba"
+export MAMBA_ROOT_PREFIX="$HOME/micromamba"
 __mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --prefix "$MAMBA_ROOT_PREFIX" 2>/dev/null)"
 if [ $? -eq 0 ]; then
         eval "$__mamba_setup"
 else
-        if [ -f "~/micromamba/etc/profile.d/micromamba.sh" ]; then
-                . "~/micromamba/etc/profile.d/micromamba.sh"
+        if [ -f "$HOME/micromamba/etc/profile.d/micromamba.sh" ]; then
+                . "$HOME/micromamba/etc/profile.d/micromamba.sh"
         else
-                export PATH="~/micromamba/bin:$PATH" # extra space after export prevents interference from conda init
+                export PATH="$HOME/micromamba/bin:$PATH" # extra space after export prevents interference from conda init
         fi
 fi
 unset __mamba_setup
@@ -245,14 +245,14 @@ unset __mamba_setup
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('~/micromamba/bin/conda' 'shell.bash' 'hook' 2>/dev/null)"
+__conda_setup="$("$HOME/micromamba/bin/conda" 'shell.bash' 'hook' 2>/dev/null)"
 if [ $? -eq 0 ]; then
         eval "$__conda_setup"
 else
-        if [ -f "~/micromamba/etc/profile.d/conda.sh" ]; then
-                . "~/micromamba/etc/profile.d/conda.sh"
+        if [ -f "$HOME/micromamba/etc/profile.d/conda.sh" ]; then
+                . "$HOME/micromamba/etc/profile.d/conda.sh"
         else
-                export PATH="~/micromamba/bin:$PATH"
+                export PATH="$HOME/micromamba/bin:$PATH"
         fi
 fi
 unset __conda_setup
