@@ -91,6 +91,7 @@ alias ulast='mkalias_ulast'
 function mkalias_ulast() { tac "$@" | awk '!x[$1]++' | tac; }
 
 alias xsh='mkalias_xsh'
+alias x='mkalias_xsh'
 function mkalias_xsh() {
         XPATH=$(echo "$PATH" | sed 's/:/\n/g' | awk '!x[$0]++' | xargs -i -n 1 echo "::{}::" | grep -v -e "/mnt/" | xargs echo | sed 's/:: ::/:/g' | sed 's/:://g')
         XPATH="$XPATH:/mnt/c/WINDOWS/system32:/mnt/c/Users/b_r_l/AppData/Local/Programs/Microsoft VS Code Insiders/bin:/mnt/c/Users/b_r_l/AppData/Local/Programs/Microsoft VS Code/bin"
