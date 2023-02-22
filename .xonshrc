@@ -9,22 +9,22 @@ logging.basicConfig(level=logging.DEBUG, format=fmt, datefmt=datefmt)
 logging.debug("Loading .xonshrc...")
 
 # $ALIAS_COMPLETIONS_OPTIONS_BY_DEFAULT = True
-# $AUTO_CD = True
-# $AUTO_PUSHD = True
+$AUTO_CD = True
+$AUTO_PUSHD = True
 # # $AUTO_SUGGEST_IN_COMPLETIONS = True
 # # $CMD_COMPLETIONS_SHOW_DESC = True
 # # $COMMANDS_CACHE_SAVE_INTERMEDIATE = True
 # # $COMPLETION_IN_THREAD = True
 # # $COMPLETIONS_CONFIRM = True
-# $COMPLETIONS_MENU_ROWS = 10
+$COMPLETIONS_MENU_ROWS = 10
 # $DOTGLOB = True
 # # $ENABLE_ASYNC_PROMPT = True
 # $MOUSE_SUPPORT = True
 # $PUSHD_SILENT = True
 # # $UPDATE_COMPLETIONS_ON_KEYPRESS = True
-# $XONSH_AUTOPAIR = True
-# $XONSH_CTRL_BKSP_DELETION = True
-# $XONSH_HISTORY_BACKEND = "sqlite"
+$XONSH_AUTOPAIR = True
+$XONSH_CTRL_BKSP_DELETION = True
+$XONSH_HISTORY_BACKEND = "sqlite"
 # $XONSH_HISTORY_MATCH_ANYWHERE = True
 # $XONSH_STORE_STDOUT = True
 # $XONSH_SUBPROC_CAPTURED_PRINT_STDERR = True
@@ -54,6 +54,7 @@ xontrib load whole_word_jumping
 
 # execx($(starship init xonsh))
 
+xontrib load clp
 xontrib load ergopack
 xontrib load output_search
 xontrib load prompt_bar
