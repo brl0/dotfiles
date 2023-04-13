@@ -165,28 +165,5 @@ _repo() {
 complete -o nospace -F _repo repo
 complete -o nospace -F _repo coder
 
-alias ot='mkalias_ot_repo'
-function mkalias_ot_repo() { pushd "$HOME/openteams/$*" || return; }
-
-alias otc='mkalias_ot_code'
-function mkalias_ot_code() {
-    ot "$@"
-    code .
-}
-
-_ot_repo() {
-    local cur=${COMP_WORDS[COMP_CWORD]}
-    _TARGET="$HOME/openteams"
-    IFS=$'\n' tmp=($(compgen -W "$(ls $_TARGET)" -- $cur))
-    COMPREPLY=("${tmp[@]// /\ }")
-    # check if completion array is not empty
-    if [ ${#tmp[@]} -ne 0 ]; then
-        COMPREPLY=($(printf "%q\n" "${tmp[@]}"))
-    fi
-}
-
-complete -o nospace -F _ot_repo ot
-complete -o nospace -F _ot_repo otc
-
 echo 'finished ~/.bash_aliases'
 # END BRL

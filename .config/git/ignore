@@ -1,6 +1,13 @@
 __pycache__/
+.env
+.hypothesis/
 .ipynb_checkpoints/
 .mypy_cache/
+.nox/
 .pytest_cache/
+.tox/
 .vscode/
+*.egg-info/
+*.py[cod]
 dask-worker-space/
+venv/
