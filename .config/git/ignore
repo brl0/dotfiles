@@ -8,6 +8,10 @@ __pycache__/
 .tox/
 .vscode/
 *.egg-info/
+*.local
+*.log
 *.py[cod]
+*tmp*
 dask-worker-space/
+monkeytype.sqlite3
 venv/
