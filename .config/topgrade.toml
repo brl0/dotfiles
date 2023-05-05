@@ -16,7 +16,7 @@ ignore_failures = ["conda", "node", "pip3", "pipx", "powershell"]
 no_retry = true
 
 # Run inside tmux
-run_in_tmux = true
+run_in_tmux = false
 
 # List of remote machines with Topgrade installed on them
 #remote_topgrades = ["toothless", "pi", "parnas"]
