@@ -98,6 +98,9 @@ function mkalias_xsh() {
     PATH="$XPATH" xonsh "$@"
 }
 
+alias repo='mkalias_pandoc'
+function mkalias_pandoc() { docker run --rm --volume "$(pwd):/data" --user $(id -u):$(id -g) pandoc/latex "$@"; }
+
 section="----------------------------------------"
 
 alias print_date='mkalias_date'
@@ -164,9 +167,6 @@ _repo() {
 
 complete -o nospace -F _repo repo
 complete -o nospace -F _repo coder
-
-alias repo='mkalias_pandoc'
-function mkalias_pandoc() { docker run --rm --volume "$(pwd):/data" --user $(id -u):$(id -g) pandoc/latex "$@"; }
 
 echo 'finished ~/.bash_aliases'
 # END BRL
