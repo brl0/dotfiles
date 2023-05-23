@@ -2,7 +2,8 @@
 
 echo 'processing ~/.bash_aliases'
 
-mkcd() {
+alias mkcd='mkalias_mkcd'
+function mkalias_mkcd() {
     test -d "$1" || mkdir -p -- "$1" && cd -P -- "$1" || return
 }
 
