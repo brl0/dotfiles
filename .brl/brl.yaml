@@ -599,6 +599,7 @@ dependencies:
   - plotly
   - pluggy
   - ply
+  - polars
   - pooch
   - poppler
   - poppler-data
@@ -947,16 +948,18 @@ dependencies:
   - zope.interface
   - zstandard
   - zstd
+
   - hatch-vcs
+
   - bash
   - importlib-metadata    # [py<38]
   - ipympl
   - multiping
   - pdvega
-  - python-primesieve
   - spacy
   - validators
   - watermark
+
   - codecov
   - coverage
   - dominate
@@ -992,6 +995,7 @@ dependencies:
       - xontrib-onepath
       - xontrib-prompt-starship
       - xontrib-sh
+
       - bash
       - hypothesis-auto
       - hypothesis>6    # for hypothesis-auto
@@ -999,3 +1003,8 @@ dependencies:
       - libtmux
       - primesieve    # for python-primesieve
       - pypdf4
+
+      - attrs>=23.1.0
+      - boltons>=23
+      - glom>=23.3.0
+      - loguru>=0.7.0
