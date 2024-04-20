@@ -966,6 +966,9 @@ dependencies:
   - fpdf
   - pytest-cov
   - scripttest
+
+  - itables
+
   - pip:
       - asynq
       - autotyping
@@ -1008,3 +1011,5 @@ dependencies:
       - boltons>=23
       - glom>=23.3.0
       - loguru>=0.7.0
+
+      - pytest-print

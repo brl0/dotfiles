@@ -98,7 +98,7 @@ disallowed_packages:
   - xonda
 
 channel_priority: disabled # strict, flexible, disabled
-experimental_solver: classic # libmamba
+# experimental_solver: classic # libmamba
 pip_interop_enabled: true
 report_errors: true
 restore_free_channel: true
@@ -672,3 +672,6 @@ unsatisfiable_hints_check_depth: 1
 # #   take. Defaults to 3.
 # #
 # unsatisfiable_hints_check_depth: 2
+
+
+solver: libmamba
