@@ -13,9 +13,9 @@ esac
 
 # Function to source a file if it exists
 function source_if_exists() {
-        if [ -f "$1" ]; then
-                . "$1"
-        fi
+    if [ -f "$1" ]; then
+        . "$1"
+    fi
 }
 
 # don't put duplicate lines or lines starting with space in the history.
@@ -27,12 +27,12 @@ export HISTTIMEFORMAT='%F, %T '
 shopt -s histappend
 
 if [ -f "$HOME/dotfiles/.brl/shopts.txt" ]; then
-        BRL_OPTS=$(
-                grep -vxE '[[:blank:]]*([#;].*)?' "$HOME/dotfiles/.brl/shopts.txt" |
-                        grep -o '^[^#]*' |
-                        sort -u | xargs echo
-        )
-        shopt -s $BRL_OPTS
+    BRL_OPTS=$(
+        grep -vxE '[[:blank:]]*([#;].*)?' "$HOME/dotfiles/.brl/shopts.txt" |
+            grep -o '^[^#]*' |
+            sort -u | xargs echo
+    )
+    shopt -s $BRL_OPTS
 fi
 shopt -s progcomp_alias
 
@@ -55,7 +55,7 @@ shopt -s globstar
 
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot-}" ] && [ -r /etc/debian_chroot ]; then
-        debian_chroot=$(cat /etc/debian_chroot)
+    debian_chroot=$(cat /etc/debian_chroot)
 fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
@@ -69,42 +69,42 @@ esac
 force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
-        if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-                # We have color support; assume it's compliant with Ecma-48
-                # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-                # a case would tend to support setf rather than setaf.)
-                color_prompt=yes
-        else
-                color_prompt=
-        fi
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
+    else
+        color_prompt=
+    fi
 fi
 
 if [ "$color_prompt" = yes ]; then
-        PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
-        PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm* | rxvt*)
-        PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-        ;;
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
 *) ;;
 
 esac
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
-        test -r "$HOME/.dircolors" && eval "$(dircolors -b "$HOME/.dircolors")" || eval "$(dircolors -b)"
-        alias ls='ls --color=auto'
-        alias dir='dir --color=auto'
-        alias vdir='vdir --color=auto'
+    test -r "$HOME/.dircolors" && eval "$(dircolors -b "$HOME/.dircolors")" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
 
-        alias grep='grep --color=auto'
-        alias fgrep='fgrep --color=auto'
-        alias egrep='egrep --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
 fi
 
 # colored GCC warnings and errors
@@ -164,10 +164,10 @@ bind '"\e[B": history-search-forward'
 # https://devpro.media/install-powerline-ubuntu/#install-powerline
 # Powerline configuration
 if [ -f /usr/share/powerline/bindings/bash/powerline.sh ]; then
-        powerline-daemon -q
-        POWERLINE_BASH_CONTINUATION=1
-        POWERLINE_BASH_SELECT=1
-        source /usr/share/powerline/bindings/bash/powerline.sh
+    powerline-daemon -q
+    POWERLINE_BASH_CONTINUATION=1
+    POWERLINE_BASH_SELECT=1
+    source /usr/share/powerline/bindings/bash/powerline.sh
 fi
 
 # https://www.vagrantup.com/docs/other/wsl.html
@@ -215,7 +215,7 @@ HISTIGNORE="$HISTIGNORE:"
 export HISTIGNORE
 
 for x in ~/scripts/autorun/*.env; do
-        source "$x"
+    source "$x"
 done
 
 # PATH="/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32:/mnt/c/Users/b_r_l/AppData/Local/Microsoft/WindowsApps:$PATH"
@@ -232,13 +232,13 @@ export MAMBA_EXE="$HOME/.local/bin/micromamba"
 export MAMBA_ROOT_PREFIX="$HOME/micromamba"
 __mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --prefix "$MAMBA_ROOT_PREFIX" 2>/dev/null)"
 if [ $? -eq 0 ]; then
-        eval "$__mamba_setup"
+    eval "$__mamba_setup"
 else
-        if [ -f "$HOME/micromamba/etc/profile.d/micromamba.sh" ]; then
-                . "$HOME/micromamba/etc/profile.d/micromamba.sh"
-        else
-                export PATH="$HOME/micromamba/bin:$PATH" # extra space after export prevents interference from conda init
-        fi
+    if [ -f "$HOME/micromamba/etc/profile.d/micromamba.sh" ]; then
+        . "$HOME/micromamba/etc/profile.d/micromamba.sh"
+    else
+        export PATH="$HOME/micromamba/bin:$PATH" # extra space after export prevents interference from conda init
+    fi
 fi
 unset __mamba_setup
 # <<< mamba initialize <<<
@@ -247,13 +247,13 @@ unset __mamba_setup
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$("$HOME/micromamba/bin/conda" 'shell.bash' 'hook' 2>/dev/null)"
 if [ $? -eq 0 ]; then
-        eval "$__conda_setup"
+    eval "$__conda_setup"
 else
-        if [ -f "$HOME/micromamba/etc/profile.d/conda.sh" ]; then
-                . "$HOME/micromamba/etc/profile.d/conda.sh"
-        else
-                export PATH="$HOME/micromamba/bin:$PATH"
-        fi
+    if [ -f "$HOME/micromamba/etc/profile.d/conda.sh" ]; then
+        . "$HOME/micromamba/etc/profile.d/conda.sh"
+    else
+        export PATH="$HOME/micromamba/bin:$PATH"
+    fi
 fi
 unset __conda_setup
 # <<< conda initialize <<<
