@@ -18,6 +18,7 @@ dependencies:
   - python-lsp-server
 
   - pip:
+      - python-lsp-server[all]
       - xonsh-autoxsh
       - xontrib-back2dir
       - xontrib-clp
