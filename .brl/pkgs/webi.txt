@@ -1,4 +1,5 @@
 aliasman
 brew
 dotenv
+dotenv-linter
 pathman

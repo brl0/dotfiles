@@ -182,7 +182,8 @@ set +o allexport
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
-source_if_exists "$HOME/.fzf.bash"
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --bash)"
 
 source_if_exists "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/bashrc"
 
@@ -215,7 +216,8 @@ HISTIGNORE=$(echo "$HISTIGNORE" | sed 's/\:/\n/g' | sort -u | xargs echo | sed '
 HISTIGNORE="$HISTIGNORE:"
 export HISTIGNORE
 
-for x in ~/scripts/autorun/*.env; do
+for x in ~/scripts/autorun/*.{env,sh}; do
+    # shellcheck source=~/scripts/autorun/*
     source "$x"
 done
 

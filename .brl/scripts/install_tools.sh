@@ -7,7 +7,6 @@ xargs -a .brl/pkgs/apt.txt -r apt install -y
 
 # install webi
 curl -sS https://webi.sh/webi | sh; \
-# shellcheck source=/home/brl0/.config/envman/PATH.env
 source ~/.config/envman/PATH.env
 xargs -a .brl/pkgs/webi.txt -r webi
 

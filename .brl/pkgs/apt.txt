@@ -1,2 +1,4 @@
+bash-doc
 img2sixel
 imagemagick
+socat

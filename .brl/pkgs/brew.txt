@@ -1,10 +1,12 @@
 asdf
 bash-completion@2
+direnv
 fzf
 gh
 jq
 lsd
 micromamba
+navi
 nvm
 ripgrep-all
 shellcheck

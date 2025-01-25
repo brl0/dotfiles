@@ -1,1 +1,2 @@
 euporie[all]
+powerline-status
