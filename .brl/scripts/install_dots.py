@@ -36,7 +36,7 @@ def link_dots(dotfile_dir: str, dry_run: bool = _DRY_RUN) -> None:
     dotfile_path = Path(dotfile_dir)
     repo = git.Repo(str(dotfile_path), search_parent_directories=True)
     ignore = set()
-    for file in [".ignore"]:
+    for file in ["~/.brl/.ignore"]:
         ignore_file = dotfile_path / file
         if ignore_file.exists():
             ignore.add(ignore_file.read_text().split("\n"))

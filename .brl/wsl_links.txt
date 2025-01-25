@@ -4,6 +4,7 @@
 /mnt/c/local/ local_c
 /mnt/c/Users/b_r_l/.aws/ .aws
 /mnt/c/Users/b_r_l/.azure/ .azure
+/mnt/c/Users/b_r_l/.env .env
 /mnt/c/Users/b_r_l/.kaggle/ .kaggle
 /mnt/c/Users/b_r_l/ b_r_l
 /mnt/c/Users/b_r_l/Downloads/ downloads

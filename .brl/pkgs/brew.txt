@@ -1,0 +1,15 @@
+asdf
+bash-completion@2
+fzf
+gh
+jq
+lsd
+micromamba
+nvm
+ripgrep-all
+shellcheck
+shfmt
+sqlfluff
+starship
+topgrade
+vale

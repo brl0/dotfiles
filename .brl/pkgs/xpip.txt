@@ -1,0 +1,16 @@
+abbrevs
+bashisms
+whole_word_jumping
+clp
+ergopack
+output_search
+prompt_bar
+prompt_starship
+xontrib-xlsd
+xontrib-pipeliner
+xontrib-z
+xontrib-sh
+xontrib-ergopack[onepath,prompt,dev]
+xontrib-jupyter
+timg
+teimpy

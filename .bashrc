@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -7,8 +8,8 @@ echo 'processing ~/.bashrc'
 
 # If not running interactively, don't do anything
 case $- in
-*i*) ;;
-*) return ;;
+    *i*) ;;
+      *) return;;
 esac
 
 # Function to source a file if it exists
@@ -54,7 +55,7 @@ shopt -s globstar
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot-}" ] && [ -r /etc/debian_chroot ]; then
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
@@ -138,7 +139,7 @@ source_if_exists "$HOME/.bash_aliases"
 # fi
 
 source_if_exists /usr/share/bash-completion/bash_completion
-# source_if_exists /etc/bash_completion
+source_if_exists /etc/bash_completion
 
 # BRL
 export COLORTERM=truecolor
@@ -224,7 +225,7 @@ PATH="$HOME/.local/bin:$PATH"
 PATH=$(echo "$PATH" | sed 's/:/\n/g' | awk '!x[$0]++' | xargs -i -n 1 echo "::{}::" | xargs echo | sed 's/:: ::/:/g' | sed 's/:://g')
 export PATH
 
-export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+# export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
 
 # >>> mamba initialize >>>
 # !! Contents within this block are managed by 'mamba init' !!

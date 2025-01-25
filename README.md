@@ -4,6 +4,8 @@ brl0 dotfiles
 TODO:
 - root level file linking?
 
+- install conda/mamba/micromamba
+
 /etc/apt/apt.conf.d/99-Phased-Updates
 
 ```

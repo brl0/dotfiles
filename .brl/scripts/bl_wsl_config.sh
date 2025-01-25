@@ -2,7 +2,7 @@
 # Create symbolic links for commonly used directories
 # BRL XPS8500
 
-echo 'script begin'
+echo "script begin: $0"
 
 /bin/bash ~/dotfiles/.brl/scripts/update_links.sh
 
@@ -12,11 +12,13 @@ chmod -R +x ~/code
 
 mkdir ~/repos
 
-# git config --global user.name "Brian Larsen"
-# git config --global user.email "B_R_L@hotmail.com"
-# git config --global core.editor nano
+# /bin/bash ~/dotfiles/.brl/scripts/git_config.sh
 
 /bin/bash ~/dotfiles/.brl/scripts/copy_ssh.sh
 
-echo 'script complete'
+/usr/bin/env python3 ~/dotfiles/.brl/scripts/install_dots.py
+
+/bin/bash ~/dotfiles/.brl/scripts/install_tools.sh
+
+echo "script end: $0"
 # END

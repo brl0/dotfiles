@@ -1,0 +1,4 @@
+aliasman
+brew
+dotenv
+pathman

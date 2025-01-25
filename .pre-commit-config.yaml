@@ -62,5 +62,9 @@ repos:
     rev: v3.8.0-1
     hooks:
       - id: shfmt-docker
+  - repo: https://github.com/securesauce/precli
+    rev: '0.7.10'
+    hooks:
+      - id: precli
 default_language_version:
     python: python3.10

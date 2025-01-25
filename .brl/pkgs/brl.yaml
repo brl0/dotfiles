@@ -1,0 +1,34 @@
+---
+name: brl
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.12
+  - jupyterlab>=3.6.3
+  - dask
+  - geopandas
+  - spatialpandas
+  - bokeh
+  - holoviews
+  - geoviews
+  - hvplot
+  - matplotlib
+  - ipykernel
+  - ipython
+  - python-lsp-server
+
+  - pip:
+      - xonsh-autoxsh
+      - xontrib-back2dir
+      - xontrib-clp
+      - xontrib-cmd-durations
+      - xontrib-ergopack
+      - xontrib-hist-format
+      - xontrib-history-encrypt
+      - xontrib-onepath
+      - xontrib-prompt-starship
+      - xontrib-sh
+
+      - konch
+      - libtmux
+      - primesieve    # for python-primesieve
