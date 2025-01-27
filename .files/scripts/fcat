@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Function to filter comments
+filter_comments() {
+    grep -vxE '[[:blank:]]*([#;].*)?' |
+    grep -o '^[^#]*' |
+    awk '{$1=$1;print}'
+    # grep -v '^#' | sed 's/#.*//' | awk '{$1=$1;print}'
+}
+
+# Check if input is provided as a file argument
+if [ -t 0 ] && [ -z "$1" ]; then
+    echo "Usage: $0 <file>"
+    exit 1
+elif [ -z "$1" ]; then
+    # If no file argument is provided, read from standard input
+    cat /dev/stdin | filter_comments
+else
+    # If a file argument is provided, read from the file
+    cat "$1" | filter_comments
+fi

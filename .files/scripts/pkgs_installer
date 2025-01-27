@@ -1,0 +1,14 @@
+#!/bin/bash
+
+install_packages() {
+    local package_file=$1
+    local install_command=$2
+
+    fcat "$package_file" | xargs $install_command
+}
+
+# To use from the command line, you can source this script or make it executable:
+# Usage: ./install.sh packages.txt "sudo apt-get install -y"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    install_packages "$1" "$2"
+fi

@@ -1,0 +1,2 @@
+.files/scripts/set_shopts.sh
+.files/scripts/sourcing.sh

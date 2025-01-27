@@ -1,0 +1,25 @@
+# shell fun
+asdf
+bash-completion@2
+direnv
+fzf
+lsd  # nicer ls
+navi
+starship  # prompt configuration
+
+# tools
+gh
+jq
+ripgrep-all
+yq
+
+# linters
+shellcheck
+shfmt
+sqlfluff
+vale
+
+# package managers
+micromamba
+nvm  # node version manager
+topgrade

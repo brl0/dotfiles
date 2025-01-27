@@ -4,52 +4,30 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
-echo 'processing ~/.bashrc'
-
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
       *) return;;
 esac
 
-# Function to source a file if it exists
-function source_if_exists() {
-    if [ -f "$1" ]; then
-        . "$1"
-    fi
-}
+echo "script begin: $0"
+echo 'processing ~/.bashrc'
 
-# don't put duplicate lines or lines starting with space in the history.
-# See bash(1) for more options
-export HISTCONTROL="ignoreboth:erasedups"
-export HISTTIMEFORMAT='%F, %T '
+# run all autorun scripts
+for x in "$HOME"/.files/autorun/*.{env,bash,sh}; do
+    [ -e "$x" ] || continue  # Skip if no files match the pattern
+    echo "sourcing: $x"
+    # shellcheck disable=SC1090
+    source "$x"
+done
 
-# append to the history file, don't overwrite it
-shopt -s histappend
+import_env "$HOME/.bash.env"
+import_env "$HOME/.env"
 
-if [ -f "$HOME/dotfiles/.brl/shopts.txt" ]; then
-    BRL_OPTS=$(
-        grep -vxE '[[:blank:]]*([#;].*)?' "$HOME/dotfiles/.brl/shopts.txt" |
-            grep -o '^[^#]*' |
-            sort -u | xargs echo
-    )
-    shopt -s $BRL_OPTS
-fi
-shopt -s progcomp_alias
-
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-export HISTSIZE=99999
-export HISTFILESIZE=99999
+# Call the function to set shopt options from a file
+set_shopt_options "$HOME/dotfiles/.files/config/shopts.txt"
 
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
-
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
-
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -61,7 +39,7 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-xterm-color | *-256color) color_prompt=yes ;;
+    xterm-color | *-256color) color_prompt=yes ;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -108,18 +86,6 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
-# colored GCC warnings and errors
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # $HOME/.bash_aliases, instead of adding them here directly.
@@ -142,12 +108,6 @@ source_if_exists /usr/share/bash-completion/bash_completion
 source_if_exists /etc/bash_completion
 
 # BRL
-export COLORTERM=truecolor
-
-# https://stackoverflow.com/questions/5740835/how-to-use-pipe-in-ipython
-export PAGER=less
-export LESS=-R # --use-color -Dd+r$Du+b'
-
 # Coloured man page support
 # using 'less' env vars (format is '\E[<brightness>;<colour>m')
 # export LESS_TERMCAP_mb="\033[01;31m"     # begin blinking
@@ -161,23 +121,15 @@ export LESS=-R # --use-color -Dd+r$Du+b'
 bind '"\e[A": history-search-backward'
 bind '"\e[B": history-search-forward'
 
-# https://www.hanselman.com/blog/HowToMakeAPrettyPromptInWindowsTerminalWithPowerlineNerdFontsCascadiaCodeWSLAndOhmyposh.aspx
-# https://devpro.media/install-powerline-ubuntu/#install-powerline
-# Powerline configuration
-if [ -f /usr/share/powerline/bindings/bash/powerline.sh ]; then
-    powerline-daemon -q
-    POWERLINE_BASH_CONTINUATION=1
-    POWERLINE_BASH_SELECT=1
-    source /usr/share/powerline/bindings/bash/powerline.sh
-fi
-
-# https://www.vagrantup.com/docs/other/wsl.html
-export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS="1"
-# export DOCKER_HOST=tcp://127.0.0.1:2375
-
-set -o allexport
-source_if_exists "$HOME/.env"
-set +o allexport
+# # https://www.hanselman.com/blog/HowToMakeAPrettyPromptInWindowsTerminalWithPowerlineNerdFontsCascadiaCodeWSLAndOhmyposh.aspx
+# # https://devpro.media/install-powerline-ubuntu/#install-powerline
+# # Powerline configuration
+# if [ -f /usr/share/powerline/bindings/bash/powerline.sh ]; then
+#     powerline-daemon -q
+#     POWERLINE_BASH_CONTINUATION=1
+#     POWERLINE_BASH_SELECT=1
+#     source /usr/share/powerline/bindings/bash/powerline.sh
+# fi
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
@@ -216,11 +168,6 @@ HISTIGNORE=$(echo "$HISTIGNORE" | sed 's/\:/\n/g' | sort -u | xargs echo | sed '
 HISTIGNORE="$HISTIGNORE:"
 export HISTIGNORE
 
-for x in ~/scripts/autorun/*.{env,sh}; do
-    # shellcheck source=~/scripts/autorun/*
-    source "$x"
-done
-
 # PATH="/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32:/mnt/c/Users/b_r_l/AppData/Local/Microsoft/WindowsApps:$PATH"
 PATH="$HOME/.local/bin:$PATH"
 # deduplicate PATH values
@@ -229,22 +176,22 @@ export PATH
 
 # export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
 
-# >>> mamba initialize >>>
-# !! Contents within this block are managed by 'mamba init' !!
-export MAMBA_EXE="$HOME/.local/bin/micromamba"
-export MAMBA_ROOT_PREFIX="$HOME/micromamba"
-__mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --prefix "$MAMBA_ROOT_PREFIX" 2>/dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__mamba_setup"
-else
-    if [ -f "$HOME/micromamba/etc/profile.d/micromamba.sh" ]; then
-        . "$HOME/micromamba/etc/profile.d/micromamba.sh"
-    else
-        export PATH="$HOME/micromamba/bin:$PATH" # extra space after export prevents interference from conda init
-    fi
-fi
-unset __mamba_setup
-# <<< mamba initialize <<<
+# # >>> mamba initialize >>>
+# # !! Contents within this block are managed by 'mamba init' !!
+# export MAMBA_EXE="$HOME/.local/bin/micromamba"
+# export MAMBA_ROOT_PREFIX="$HOME/micromamba"
+# __mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --prefix "$MAMBA_ROOT_PREFIX" 2>/dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__mamba_setup"
+# else
+#     if [ -f "$HOME/micromamba/etc/profile.d/micromamba.sh" ]; then
+#         . "$HOME/micromamba/etc/profile.d/micromamba.sh"
+#     else
+#         export PATH="$HOME/micromamba/bin:$PATH" # extra space after export prevents interference from conda init
+#     fi
+# fi
+# unset __mamba_setup
+# # <<< mamba initialize <<<
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -261,5 +208,8 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+eval "$(register-python-argcomplete pipx)"
+
 echo 'finished ~/.bashrc'
+echo "script end: $0"
 # END BRL

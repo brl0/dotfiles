@@ -28,36 +28,37 @@ aggressive_update_packages:
   - conda
   - mamba
   - pip
+  - pipx
   - setuptools
   - wheel
 create_default_packages:
 #   # linting
-  - autopep8
-  - bandit
-  - black
-  - flake8
-  - isort
-  - mccabe
-  - mypy
-  - pre-commit
-  - prospector
-  - pycodestyle
-  - pydocstyle
-  - pyflakes
-  - pyjanitor
-  - pylama
-  - pylint
-  - pylint-flask
-  - pylint-plugin-utils
-#   # - pyls-black
-#   # - pyls-isort
-#   # - pyls-memestra
-#   # - pyls-mypy
-  - pyright
-  - pyroma
-  - radon
-  - rope
-  - yapf
+#   - autopep8
+#   - bandit
+#   - black
+#   - flake8
+#   - isort
+#   - mccabe
+#   - mypy
+#   - pre-commit
+#   - prospector
+#   - pycodestyle
+#   - pydocstyle
+#   - pyflakes
+#   - pyjanitor
+#   - pylama
+#   - pylint
+#   - pylint-flask
+#   - pylint-plugin-utils
+# #   # - pyls-black
+# #   # - pyls-isort
+# #   # - pyls-memestra
+# #   # - pyls-mypy
+#   - pyright
+#   - pyroma
+#   - radon
+#   - rope
+#   - yapf
 #   # installers
 #   - build
 #   - flit
@@ -67,10 +68,10 @@ create_default_packages:
 #   # - poetry
 #   - virtualenv
 #   # shell
-  - doit
+#   - doit
   - ipython
-  - rich
-  - xonsh
+#   - rich
+#   - xonsh
 #   # other
 #   - ca-certificates
 #   - certifi
@@ -79,13 +80,13 @@ create_default_packages:
   - conda
 #   - conda-build
 #   - doit-with-all
-#   - ipykernel
+  - ipykernel
 #   - make
   - mamba
-  - nox
-#   - openssl
-#   - pip
-  - pyviz::pyctdev
+#   - nox
+# #   - openssl
+# #   - pip
+#   - pyviz::pyctdev
 #   - pyyaml
 #   - requests
 #   - setuptools

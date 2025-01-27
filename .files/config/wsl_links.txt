@@ -1,5 +1,5 @@
-/home/brl0/dotfiles/.brl/scripts/upgrades.sh upg.sh
-/home/brl0/dotfiles/.brl/scripts/ scripts
+/home/brl0/dotfiles/.files/scripts/upgrades.sh upg.sh
+/home/brl0/dotfiles/.files/scripts/ scripts
 /mnt/c/ c
 /mnt/c/local/ local_c
 /mnt/c/Users/b_r_l/.aws/ .aws

@@ -1,2 +1,3 @@
+argcomplete
 euporie[all]
 powerline-status

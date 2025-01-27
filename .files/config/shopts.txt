@@ -3,7 +3,11 @@ cdable_vars
 cdspell
 checkhash
 checkjobs
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
 checkwinsize
+
 cmdhist
 complete_fullquote
 direxpand
@@ -14,8 +18,12 @@ extglob
 extquote
 force_fignore
 globasciiranges
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
 globstar
-histappend
+
+histappend  # append to the history file, don't overwrite it
 histreedit
 histverify
 inherit_errexit

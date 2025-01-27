@@ -5,7 +5,7 @@
 echo 'script begin'
 
 pushd ~ || exit
-xargs -a ~/dotfiles/.brl/wsl_links.txt -i -r echo {} | xargs -r -n 2 ln -s
+xargs -a ~/dotfiles/.files/config/wsl_links.txt -i -r echo {} | xargs -r -n 2 ln -s
 popd || exit
 
 echo 'script complete'
