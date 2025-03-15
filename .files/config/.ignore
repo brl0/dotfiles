@@ -1,8 +1,10 @@
-.brl/
+.files/
 .git/
+.vscode/
 .gitignore
 .ignore
 .pre-commit-config.yaml
+Dockerfile
 LICENSE
 pyproject.toml
 README.md

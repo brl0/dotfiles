@@ -1,10 +1,23 @@
 #!/bin/bash
 
+sect="----------------------------------------"
+
+alias pf=printf
+
+sect_cmd="printf \"\\n%s\\n\" \"$sect\""
+
+alias print_section='mkalias_section'
+function mkalias_section() { eval "$sect_cmd"; }
+alias p_sect='mkalias_section'
+
+default_shell="/bin/bash -c"
+
 install_from_conf() {
     local conf_file="$1"
     local current_section=""
     local install_command=""
     local install_mode=""
+    local shell="$default_shell"
     local packages=()
     local in_packages=0
 
@@ -15,26 +28,36 @@ install_from_conf() {
 
     process_section() {
         if [[ -n "$current_section" ]]; then
+            echo $sect
             echo "Processing section [$current_section]..."
+            echo $sect
         fi
 
         if [[ -n "$install_command" ]]; then
             if [[ ${#packages[@]} -gt 0 ]]; then
+                echo $sect
                 echo "Installing packages for [$current_section]..."
+                echo $sect
 
                 if [[ "$install_mode" == "multi" ]]; then
-                    echo "$install_command ${packages[*]}"
-                    eval "$install_command ${packages[*]}"
+                    echo $sect
+                    echo $shell "$install_command ${packages[*]}"
+                    echo $sect
+                    $shell "$install_command ${packages[*]}"
                 else
                     for pkg_line in "${packages[@]}"; do
-                        echo "$install_command $pkg_line"
-                        eval "$install_command $pkg_line"
+                        echo $sect
+                        echo $shell "$install_command $pkg_line"
+                        echo $sect
+                        $shell "$install_command $pkg_line"
                     done
                 fi
             else
+                echo $sect
                 echo "Running command for [$current_section]..."
-                echo "$install_command"
-                eval "$install_command"
+                echo $shell "$install_command"
+                echo $sect
+                $shell "$install_command"
             fi
         fi
     }
@@ -48,7 +71,11 @@ install_from_conf() {
             current_section="${BASH_REMATCH[0]}"
             install_command=""
             install_mode=""
+            shell="$default_shell"
             packages=()
+            in_packages=0
+        elif [[ "$line" =~ ^shell=(.*)$ ]]; then
+            shell="${BASH_REMATCH[1]}"
             in_packages=0
         elif [[ "$line" == "packages:" ]]; then
             in_packages=1
@@ -69,3 +96,5 @@ install_from_conf() {
 if [[ -n "$1" ]]; then
     install_from_conf "$1"
 fi
+
+exit 0

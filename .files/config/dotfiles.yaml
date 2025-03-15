@@ -1,5 +1,4 @@
 symlinks:
-  upg.sh: /home/brl0/dotfiles/.files/scripts/upgrades.sh
   scripts: /home/brl0/dotfiles/.files/scripts/
   c: /mnt/c/
   local_c: /mnt/c/local/

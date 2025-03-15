@@ -7,39 +7,41 @@ import sys
 from fnmatch import fnmatch
 from glob import has_magic
 from pathlib import Path
+from collections.abc import Iterable
 
 import git
 
 
 _DRY_RUN = bool(str(os.getenv("_DRY_RUN", "")))
+_SKIP_EXISTING = bool(str(os.getenv("_SKIP_EXISTING", "")))
 _LOG_LEVEL = logging.INFO
 logging.basicConfig(level=_LOG_LEVEL)
 
 
-def contains_any(string: str, substrings) -> bool:
+def contains_any(string: str, substrings: Iterable) -> bool:
     """Check if string contains any of the substrings."""
     for substring in substrings:
         if substring in string:
-            logging.debug(f"{string} contains {substring}")
+            logging.debug("%s contains %s", string, substring)
             return True
         if has_magic(substring) and fnmatch(string, substring):
-            logging.debug(f"{string} matches {substring}")
+            logging.debug("%s matches %s", string, substring)
             return True
     return False
 
 
-def link_dots(dotfile_dir: str, dry_run: bool = _DRY_RUN) -> None:
+def link_dots(dotfile_dir: str, *, dry_run: bool = _DRY_RUN) -> None:
     """Link dot files in directory."""
-    if not os.path.isdir(dotfile_dir):
-        print("Directory %s does not exist" % dotfile_dir)
+    if not Path(dotfile_dir).is_dir():
+        print(f"Directory {dotfile_dir} does not exist")
         sys.exit(1)
     dotfile_path = Path(dotfile_dir)
     repo = git.Repo(str(dotfile_path), search_parent_directories=True)
-    ignore = set()
+    ignore: set[str] = set()
     for file in [".files/config/.ignore"]:
         ignore_file = dotfile_path / file
         if ignore_file.exists():
-            ignore.add(ignore_file.read_text().split("\n"))
+            ignore |= set(ignore_file.read_text().split("\n"))
         else:
             print(f"Missing ignore file: {ignore_file}")
     ignore = set(filter(bool, ignore))
@@ -79,18 +81,20 @@ def link_dots(dotfile_dir: str, dry_run: bool = _DRY_RUN) -> None:
             dst = Path().home() / src.relative_to(dotfile_path)
             if contains_any(str(src), ignore):
                 logging.debug("Ignoring: %s", dst)
-            elif dst.exists() and not dst.is_symlink():
-                print("Skipping existing file: %s" % dst)
+            elif dst.exists() and not dst.is_symlink() and _SKIP_EXISTING:
+                logging.info("Skipping existing file: %s", dst)
             else:
+                if dst.exists() and not dst.is_symlink() and not _SKIP_EXISTING:
+                    logging.info("Existing file found: %s", dst)
                 print(f"Linking {src} to {dst}")
                 not_known = str(dst) not in links
                 if not_known:
                     links.append(str(dst))
                 if not dry_run:
-                    if dst.is_symlink():
-                        os.remove(dst)
+                    if dst.exists():
+                        dst.unlink()
                     if not dst.parent.exists():
-                        os.makedirs(dst.parent)
+                        dst.parent.mkdir(parents=True)
                     if not_known:
                         links_file.write_text("\n".join([*sorted(set(links)), ""]))
                     os.symlink(src, dst)
@@ -99,5 +103,6 @@ def link_dots(dotfile_dir: str, dry_run: bool = _DRY_RUN) -> None:
 
 
 if __name__ == "__main__":
-    dotfile_dir = str(Path.home() / "dotfiles") if len(sys.argv) < 2 else sys.argv[1]
-    link_dots(dotfile_dir)
+    n_args = len(sys.argv) - 1
+    p = str(Path.home() / "dotfiles") if not n_args else sys.argv[1]
+    link_dots(p)

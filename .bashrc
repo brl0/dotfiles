@@ -14,7 +14,7 @@ echo "script begin: $0"
 echo 'processing ~/.bashrc'
 
 # run all autorun scripts
-for x in "$HOME"/.files/autorun/*.{env,bash,sh}; do
+for x in "$HOME/dotfiles/.files/autorun/"*.{env,bash,sh}; do
     [ -e "$x" ] || continue  # Skip if no files match the pattern
     echo "sourcing: $x"
     # shellcheck disable=SC1090

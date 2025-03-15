@@ -54,6 +54,7 @@ xontrib load coreutils
 xontrib load whole_word_jumping
 
 # execx($(starship init xonsh))
+xontrib load -s sh jump_to_dir dalias
 
 xontrib load clp
 xontrib load ergopack
@@ -70,6 +71,7 @@ xontribs = [
     "jupyter",
 ]
 for _x in xontribs:
+    print(f"Loading xontrib: {_x}")
     xontrib load $_x
 
 # $THREAD_SUBPROCS = True

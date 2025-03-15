@@ -16,7 +16,7 @@ mkdir ~/repos
 
 /bin/bash ~/dotfiles/.files/scripts/copy_ssh.sh
 
-/usr/bin/env python3 ~/dotfiles/.files/scripts/install_dots.py
+/usr/bin/env python3 ~/dotfiles/.files/dotphiliac/install_dots.py
 
 /bin/bash ~/dotfiles/.files/scripts/install_tools.sh
 

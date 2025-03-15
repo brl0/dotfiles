@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "script begin: $0"
+echo "Args: $@"
+
 source_files() {
     script_dir=$(dirname "$0")
     pushd "$script_dir/../.." > /dev/null || exit
@@ -26,5 +29,8 @@ if [[ -n "$1" ]]; then
 elif [[ ! -t 0 ]]; then
     source_files
 else
-    echo "No input provided. Please provide a file as a parameter or pipe a list of scripts."
+    # echo "No input provided. Please provide a file as a parameter or pipe a list of scripts."
+    source_files "$HOME/dotfiles/.files/config/autorun.txt"
 fi
+
+echo "script end: $0"

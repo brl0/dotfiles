@@ -16,6 +16,7 @@ dependencies:
   - ipykernel
   - ipython
   - python-lsp-server
+  - xonsh
 
   - pip:
       - python-lsp-server[all]
@@ -32,4 +33,4 @@ dependencies:
 
       - konch
       - libtmux
-      - primesieve    # for python-primesieve
+      - primesieve  # for python-primesieve
