@@ -6,8 +6,8 @@
 
 # If not running interactively, don't do anything
 case $- in
-    *i*) ;;
-      *) return;;
+*i*) ;;
+*) return ;;
 esac
 
 echo "script begin: $0"
@@ -15,7 +15,7 @@ echo 'processing ~/.bashrc'
 
 # run all autorun scripts
 for x in "$HOME/dotfiles/.files/autorun/"*.{env,bash,sh}; do
-    [ -e "$x" ] || continue  # Skip if no files match the pattern
+    [ -e "$x" ] || continue # Skip if no files match the pattern
     echo "sourcing: $x"
     # shellcheck disable=SC1090
     source "$x"
@@ -39,7 +39,7 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color | *-256color) color_prompt=yes ;;
+xterm-color | *-256color) color_prompt=yes ;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -209,6 +209,8 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 eval "$(register-python-argcomplete pipx)"
+
+[ ! -f "$HOME/.x-cmd.root/X" ] || . "$HOME/.x-cmd.root/X" # boot up x-cmd.
 
 echo 'finished ~/.bashrc'
 echo "script end: $0"
