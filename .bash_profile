@@ -9,3 +9,5 @@ else
 fi
 echo "finished .bash_profile"
 # /BRL
+
+[ ! -f "$HOME/.x-cmd.root/X" ] || . "$HOME/.x-cmd.root/X" # boot up x-cmd.

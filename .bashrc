@@ -260,3 +260,5 @@ unset __conda_setup
 
 echo 'finished ~/.bashrc'
 # END BRL
+
+[ ! -f "$HOME/.x-cmd.root/X" ] || . "$HOME/.x-cmd.root/X" # boot up x-cmd.
