@@ -210,8 +210,6 @@ unset __conda_setup
 
 eval "$(register-python-argcomplete pipx)"
 
-[ ! -f "$HOME/.x-cmd.root/X" ] || . "$HOME/.x-cmd.root/X" # boot up x-cmd.
-
 echo 'finished ~/.bashrc'
 echo "script end: $0"
 # END BRL

@@ -1,13 +1,16 @@
-# Use Ubuntu as the base image
 FROM ubuntu:latest
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    NONINTERACTIVE=1 \
+    CI=1
 
 # Create a non-root user (you can change the username if desired)
 ARG USERNAME=ubuntu
 
 # Set the working directory to the user's home directory
 WORKDIR /home/$USERNAME
+
+SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && \
     apt-get install -y apt-utils build-essential curl file git ruby-full locales sudo
@@ -18,10 +21,22 @@ COPY .files/scripts/install_from_conf.sh /tmp/install_from_conf.sh
 COPY .files/config/pkgs_sys.conf /tmp/pkgs_sys.conf
 
 # Install system packages
-RUN /bin/bash /tmp/install_from_conf.sh /tmp/pkgs_sys.conf && \
+RUN /bin/bash /tmp/install_from_conf.sh /tmp/pkgs_sys.conf | tee /home/ubuntu/install_sys_packages.log && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* && \
-    chown -R $USERNAME:$USERNAME /home/linuxbrew && \
     echo "Done installing system packages."
+
+COPY .files/config/pkgs_brew.conf /tmp/pkgs_brew.conf
+
+RUN mkdir -p /home/linuxbrew/.linuxbrew && chown -R $USERNAME:$USERNAME /home/linuxbrew
+
+USER $USERNAME
+
+# Install system packages
+RUN /tmp/install_from_conf.sh /tmp/pkgs_brew.conf | tee /home/ubuntu/install_brew_packages.log
+
+USER root
+RUN chown -R $USERNAME:$USERNAME /home/linuxbrew && \
+    echo "Done installing brew."
 
 # USER root
 ENV PATH="~/.local/bin:/home/linuxbrew/.linuxbrew/bin:~/.x-cmd.root/bin:${PATH}"
@@ -32,15 +47,15 @@ USER $USERNAME
 COPY .files/config/packages.conf /tmp/packages.conf
 
 # Install user packages
-RUN /bin/bash /tmp/install_from_conf.sh /tmp/packages.conf
+RUN /bin/bash /tmp/install_from_conf.sh /tmp/packages.conf | tee /home/ubuntu/install_packages.log
 
 USER root
 RUN rm -rf /tmp/*
-# RUN useradd -m -s /bin/bash $USERNAME
+RUN useradd -m -s /bin/bash $USERNAME
 USER $USERNAME
 
 # Set the default command (can be overridden at runtime)
-CMD ["bash"]
+CMD ["/bin/bash"]
 
 # Recursively copy the local directory contents into the dotfiles folder
 COPY . /home/$USERNAME/dotfiles/
@@ -50,4 +65,5 @@ USER root
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME/dotfiles
 USER $USERNAME
 
-RUN ~/dotfiles/.files/dotphiliac/install_dots.py
+RUN chmod +x ~/dotfiles/.files/dotphiliac/install_dots.py
+    # && ~/dotfiles/.files/dotphiliac/install_dots.py
