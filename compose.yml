@@ -1,0 +1,13 @@
+services:
+    dotfiles:
+        # Build the Dockerfile located in the current directory (implied context)
+        build: .
+        # Mount the current host directory (.) into the container
+        # The destination path assumes a typical Linux user home directory structure
+        # and mounts it to a directory named 'dotfiles' within that home.
+        volumes:
+            - type: bind
+              source: .
+              target: /home/ubuntu/dotfiles
+        # Optional: Keep the container running so you can interact with it
+        tty: true
