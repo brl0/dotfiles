@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install linux/wsl tools
 
-echo "script begin: $0"
+echo "script begin: $0 $1"
 
 pkg_installer "$HOME/dotfiles/.files/pkgs/apt.txt" "sudo apt-get install -y"
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "script begin: $0"
+echo "script begin: $0 $1"
 echo "Args: $@"
 
 source_files() {

@@ -10,7 +10,7 @@ case $- in
 *) return ;;
 esac
 
-echo "script begin: $0"
+echo "script begin: $0 $1"
 echo 'processing ~/.bashrc'
 
 # run all autorun scripts

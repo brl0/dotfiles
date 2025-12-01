@@ -2,7 +2,7 @@
 # Create symbolic links for commonly used directories
 # BRL XPS8500
 
-echo "script begin: $0"
+echo "script begin: $0 $1"
 
 /bin/bash ~/dotfiles/.files/scripts/update_links.sh
 
