@@ -25,7 +25,7 @@ import_env "$HOME/.bash.env"
 import_env "$HOME/.env"
 
 # Call the function to set shopt options from a file
-set_shopt_options "$HOME/dotfiles/.files/config/shopts.txt"
+# set_shopt_options "$HOME/dotfiles/.files/config/shopts.txt"
 
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 

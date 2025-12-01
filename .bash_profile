@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # BRL
 echo "processing .bash_profile"
 if [ -r ~/.profile ]; then
