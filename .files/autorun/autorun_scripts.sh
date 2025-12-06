@@ -109,7 +109,7 @@ echo " End   : $end_human"
 echo " Duration: ${duration}s"
 echo "============================================================"
 
-'
+ideas = '
 Unimplemented ideas:
 - **logfile output**
 - **optional path anchoring flag**
@@ -137,3 +137,5 @@ Unimplemented ideas:
 - Whether you wanted an **aggregate summary table** (I asked, but you didn’t request it, so it wasn’t added).
 - Whether you wanted a **debug/verbosity flag** to toggle path resolution messages (we kept verbosity always on).
 '
+
+return

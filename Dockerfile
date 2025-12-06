@@ -62,8 +62,8 @@ USER root
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME/dotfiles
 USER $USERNAME
 
-RUN chmod +x ~/dotfiles/.files/dotphiliac/install_dots.py \
+RUN chmod +x ~/dotfiles/.files/dotphiliac/install_dots.py  # \
     && mamba run python ~/dotfiles/.files/dotphiliac/install_dots.py
 
 # Set the default command (can be overridden at runtime)
-CMD ["/bin/bash", "-l"]
+CMD ["/bin/bash", "-lc"]
