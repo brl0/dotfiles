@@ -23,6 +23,14 @@ done
 
 import_env "$HOME/.bash.env"
 import_env "$HOME/.env"
+if [ -n "$WSL_DISTRO_NAME" ]; then
+    echo "WSL detected"
+    import_env "$HOME/.wsl.env"
+
+    # "C:\Program Files\Google\Chrome\Application\chrome.exe"
+    BROWSER="$(wslpath "C:\Program Files\Google\Chrome Beta\Application\chrome.exe")"
+    export BROWSER
+fi
 
 # Call the function to set shopt options from a file
 # set_shopt_options "$HOME/dotfiles/.files/config/shopts.txt"
@@ -157,10 +165,6 @@ source_if_exists "$HOME/google-cloud-sdk/completion.bash.inc"
 # else
 #     echo "ssh-agent already running"
 # fi
-
-# "C:\Program Files\Google\Chrome\Application\chrome.exe"
-BROWSER="$(wslpath "C:\Program Files\Google\Chrome Beta\Application\chrome.exe")"
-export BROWSER
 
 HISTIGNORE=$(alias | cut -d "=" -f1 | cut -d " " -f2 | xargs echo | sed 's/ /\:/g')
 HISTIGNORE="bash:clear:date:exit:fzf:history:ipython:ls:pwd:python:sh:xonsh:$HISTIGNORE:"

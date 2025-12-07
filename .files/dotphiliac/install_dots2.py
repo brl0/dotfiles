@@ -209,7 +209,7 @@ def link_dots():
     ignore_patterns = load_ignore_patterns(dotfile_path)
     links_file = dotfile_path / "links.local"
     existing_links = load_existing_links(links_file)
-    valid_links = clean_up_links(existing_links, dotfile_path, _DRY_RUN)
+    valid_links = clean_up_links(existing_links, dotfile_path, dry_run=_DRY_RUN)
     files_to_link = get_files_to_link(dotfile_path, repo)
     logging.debug("Files to link:\n%s\n", "\n".join(sorted(files_to_link)))
     link_files(

@@ -1,0 +1,14 @@
+{
+    "cSpell.words": [
+        "envman",
+        "micromamba",
+        "pipx",
+        "pkgs",
+        "webi",
+        "xpip"
+    ],
+    "python.testing.unittestEnabled": true,
+    "python.testing.pytestEnabled": true,
+    "python.terminal.shellIntegration.enabled": true,
+    "python.terminal.focusAfterLaunch": true
+}

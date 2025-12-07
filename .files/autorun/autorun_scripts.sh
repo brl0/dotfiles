@@ -109,7 +109,7 @@ echo " End   : $end_human"
 echo " Duration: ${duration}s"
 echo "============================================================"
 
-ideas = '
+ideas='
 Unimplemented ideas:
 - **logfile output**
 - **optional path anchoring flag**

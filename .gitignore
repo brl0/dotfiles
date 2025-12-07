@@ -6,7 +6,6 @@ __pycache__/
 .nox/
 .pytest_cache/
 .tox/
-.vscode/
 *.egg-info/
 *.local
 *.log
@@ -15,3 +14,12 @@ __pycache__/
 dask-worker-space/
 monkeytype.sqlite3
 venv/
+
+# Ignore all files under local/
+local/*
+
+# Do not ignore subdirectories themselves
+!local/**/
+
+# Keep .gitkeep files anywhere
+!local/**/.gitkeep

@@ -15,7 +15,7 @@ mkdir -p logs
 echo "Starting Docker build for $IMAGE_TAG at $(date)" | tee "$LOGFILE"
 
 # Run build, capture both stdout and stderr
-if docker build -t "$IMAGE_TAG" "$CONTEXT_DIR" 2>&1 | tee -a "$LOGFILE"; then
+if docker build -t "$IMAGE_TAG" "$CONTEXT_DIR" --debug 2>&1 | tee -a "$LOGFILE"; then
     echo "✅ Build succeeded for $IMAGE_TAG at $(date)" | tee -a "$LOGFILE"
 else
     EXIT_CODE=$?

@@ -20,38 +20,39 @@ RUN id -u "$USERNAME" >/dev/null 2>&1 || \
 # Set the working directory to the user's home directory
 WORKDIR /home/$USERNAME
 
-COPY .files/scripts/install_from_conf.sh /tmp/install_from_conf.sh
+COPY .files/scripts/install_from_conf.sh /tmp/dotfiles/.files/scripts/install_from_conf.sh
 
 # Install system packages
-COPY .files/config/pkgs_sys.conf /tmp/pkgs_sys.conf
-RUN /bin/bash /tmp/install_from_conf.sh /tmp/pkgs_sys.conf
+COPY .files/config/pkgs_sys.conf /tmp/dotfiles/.files/config/pkgs_sys.conf
+RUN /tmp/dotfiles/.files/scripts/install_from_conf.sh /tmp/dotfiles/.files/config/pkgs_sys.conf
 
 # Set locale
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8
 
+COPY .files/config/pkgs_sys2.conf /tmp/dotfiles/.files/config/
+RUN /tmp/dotfiles/.files/scripts/install_from_conf.sh /tmp/dotfiles/.files/config/pkgs_sys2.conf
+
 # Prepare brew directory
-RUN mkdir -p /home/linuxbrew/.linuxbrew && chown -R $USERNAME:$USERNAME /home/linuxbrew
+# RUN mkdir -p /home/linuxbrew/.linuxbrew && chown -R $USERNAME:$USERNAME /home/linuxbrew
+
+RUN mkdir -p /tmp/dotfiles && chown -R $USERNAME:$USERNAME /tmp/dotfiles
 
 # Switch to the non-root user
 USER $USERNAME
 
 # Install brew packages
-COPY .files/config/pkgs_brew.conf /tmp/pkgs_brew.conf
-RUN /tmp/install_from_conf.sh /tmp/pkgs_brew.conf
+COPY .files/config/pkgs_brew.conf /tmp/dotfiles/.files/config/pkgs_brew.conf
+RUN /tmp/dotfiles/.files/scripts/install_from_conf.sh /tmp/dotfiles/.files/config/pkgs_brew.conf
 
 ENV PATH="~/.local/bin:/home/linuxbrew/.linuxbrew/bin:~/.x-cmd.root/bin:${PATH}"
 
 # Install user packages
-COPY .files/config/pkgs_good.conf /tmp/pkgs_good.conf
-RUN /tmp/install_from_conf.sh /tmp/pkgs_good.conf
+COPY .files/config/pkgs_good.conf /tmp/dotfiles/.files/config/pkgs_good.conf
+RUN /tmp/dotfiles/.files/scripts/install_from_conf.sh /tmp/dotfiles/.files/config/pkgs_good.conf
 
 # Install user packages
-COPY .files/config/packages.conf /tmp/packages.conf
-RUN /tmp/install_from_conf.sh /tmp/packages.conf
-
-USER root
-RUN rm -rf /tmp/*
-USER $USERNAME
+COPY .files/config/packages.conf /tmp/dotfiles/.files/config/packages.conf
+RUN /tmp/dotfiles/.files/scripts/install_from_conf.sh /tmp/dotfiles/.files/config/packages.conf
 
 # Install dotfiles
 # Recursively copy the local directory contents into the dotfiles folder
@@ -62,8 +63,8 @@ USER root
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME/dotfiles
 USER $USERNAME
 
-RUN chmod +x ~/dotfiles/.files/dotphiliac/install_dots.py  # \
-    && mamba run python ~/dotfiles/.files/dotphiliac/install_dots.py
+RUN chmod +x ~/dotfiles/.files/dotphiliac/install_dots.py \
+    && mamba run -a stdout -a stderr python ~/dotfiles/.files/dotphiliac/install_dots.py 2>&1 | tee /tmp/dotfiles/logs/dotfiles_install.log
 
 # Set the default command (can be overridden at runtime)
-CMD ["/bin/bash", "-lc"]
+CMD ["/bin/bash", "-l"]

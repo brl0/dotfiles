@@ -1,5 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
+
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+DOTFILES_DIR="$(dirname "$PARENT_DIR")"
 
 sect="========================================"
 
@@ -114,7 +118,8 @@ install_from_conf() {
     ts="$(date +%Y%m%dT%H%M%S)"
     local base
     base="$(basename "$conf_file" .conf)"
-    log_file="${base}-${ts}.log"
+    mkdir -p "$DOTFILES_DIR/logs"
+    log_file="$DOTFILES_DIR/logs/${base}-${ts}.log"
     exec > >(tee -a "$log_file") 2>&1
 
     [[ -f $conf_file ]] || {
