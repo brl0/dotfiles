@@ -1,0 +1,35 @@
+# Package Manifest
+# Generated from PKG_GRAPH
+# Format: {{ graph.format_version }}
+
+{% if graph.metadata %}
+[metadata]
+{% for key, val in graph.metadata.items() %}
+{{ key }} = {{ val }}
+{% endfor %}
+
+{% endif %}
+{% for section_name, section in graph.sections.items() %}
+[{{ section_name }}]
+manager = {{ section.manager }}
+{% if section.cache_group %}cache_group = {{ section.cache_group }}{% endif %}
+{% if section.mode %}mode = {{ section.mode }}{% endif %}
+{% if section.inventory_cmd %}inventory = {{ section.inventory_cmd }}{% endif %}
+{% if section.lock_file %}lock_file = {{ section.lock_file }}{% endif %}
+
+{% if 'init' in section.commands %}init = {{ section.commands.init }}
+{% endif %}
+{% if 'pre' in section.commands %}pre = {{ section.commands.pre }}
+{% endif %}
+{% if 'install' in section.commands %}install = {{ section.commands.install }}
+{% endif %}
+{% if 'post' in section.commands %}post = {{ section.commands.post }}
+{% endif %}
+
+packages =
+{% for pkg in section.packages %}
+  {{ pkg.name }}{{ pkg.version }}{% if pkg.features %} [{{ pkg.features|join(',') }}]{% endif %}{% if pkg.tags %} @{{ pkg.tags|join(',') }}{% endif %}
+
+{% endfor %}
+
+{% endfor %}

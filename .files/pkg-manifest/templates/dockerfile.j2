@@ -1,0 +1,44 @@
+# Dockerfile for {{ graph.metadata.get('name', 'package-manifest') }}
+# Generated from manifest
+FROM ubuntu:22.04
+
+# ===== MANIFEST METADATA =====
+{% for section_name, section in graph.sections.items() %}
+# [{{ section_name }}]
+{% if section.mode %}
+# mode={{ section.mode }}
+{% endif %}
+{% if section.inventory_cmd %}
+# inventory={{ section.inventory_cmd }}
+{% endif %}
+{% for key, val in section.metadata.items() %}
+# @{{ key }}: {{ val }}
+{% endfor %}
+
+{% endfor %}
+
+# Set shell for all RUN commands
+SHELL ["/bin/bash", "-c"]
+
+{% for section_name, section in graph.sections.items() %}
+{% if section.manager == 'apt' %}
+# ===== {{ section_name }} (APT) =====
+{% if 'pre' in section.commands %}
+RUN {{ section.commands['pre'] }}
+{% endif %}
+
+RUN apt-get update && apt-get install -y \
+{% for pkg in section.packages %}
+    {{ pkg.name }}{{ pkg.version }}{% if not loop.last %} \{% endif %}
+
+{% endfor %}
+{% if 'post' in section.commands %}
+
+RUN {{ section.commands['post'] }}
+{% endif %}
+
+{% endif %}
+{% endfor %}
+
+# Default command
+CMD ["/bin/bash"]

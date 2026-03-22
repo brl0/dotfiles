@@ -1,0 +1,72 @@
+# Conda/Python packages
+# Installs Python development tools and runtime dependencies via mamba
+
+[conda/python]
+mode=multi
+init=mamba activate base
+packages = \
+  python, \
+  conda, \
+  hatch, \
+  pip, \
+  pipx, \
+  poetry, \
+  uv, \
+  ipykernel, \
+  nb_conda_kernels, \
+  argcomplete, \
+  ipython, \
+  prompt_toolkit, \
+  xonsh, \
+  black, \
+  mypy, \
+  pylint, \
+  ruff, \
+  gitpython
+
+[pip/python-dev]
+mode=multi
+packages = \
+  flake8, \
+  flake8-bugbear, \
+  flake8-import-order, \
+  flake8-quotes, \
+  euporie[all], \
+  konch, \
+  xonsh[full], \
+  python-lsp-server[all]
+
+[xpip/xonsh]
+mode=multi
+inventory=mamba run xonsh -c "'import xonsh.builtins as xb; pkgs = [x.split()[0] for x in xb.builtins.__xonsh__.commands_cache.get(\"xpip\", {}).get(\"p\", [])]'
+packages = \
+  xonsh-autoxsh, \
+  xontrib-abbrevs, \
+  xontrib-back2dir, \
+  xontrib-bash-completions-dirs, \
+  xontrib-bashisms, \
+  xontrib-clp, \
+  xontrib-cmd-durations, \
+  xontrib-commands, \
+  xontrib-dalias[dict,yaml], \
+  xontrib-ergopack[dev,onepath,prompt], \
+  xontrib-fzf-completions, \
+  xontrib-hist-format, \
+  xontrib-history-encrypt, \
+  xontrib-homebrew, \
+  xontrib-jedi, \
+  xontrib-jump-to-dir, \
+  xontrib-jupyter, \
+  xontrib-langenv, \
+  xontrib-onepath, \
+  xontrib-output-search, \
+  xontrib-pipeliner, \
+  xontrib-prompt-bar, \
+  xontrib-prompt-starship, \
+  xontrib-pyrtn, \
+  xontrib-readable-traceback, \
+  xontrib-sh, \
+  xontrib-whole-word-jumping, \
+  xontrib-xlsd, \
+  xontrib-z, \
+  timg

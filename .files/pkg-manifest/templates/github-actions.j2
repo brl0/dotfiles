@@ -1,0 +1,48 @@
+name: Package Installation - {{ graph.metadata.get('name', 'manifest') }}
+
+on:
+  push:
+    paths:
+      - 'manifest.pkgm'
+      - '.github/workflows/install.yml'
+  pull_request:
+    paths:
+      - 'manifest.pkgm'
+
+jobs:
+{% for section_name, section in graph.sections.items() %}
+  install-{{ section_name | replace('/', '-') | replace('_', '-') }}:
+    runs-on: {% if section.manager == 'apt' %}ubuntu-22.04{% elif section.manager == 'brew' %}macos-13{% else %}ubuntu-22.04{% endif %}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install {{ section_name }}
+        run: |
+{% if section.manager == 'apt' %}
+          sudo apt-get update
+          sudo apt-get install -y \
+{% for pkg in section.packages %}
+            {{ pkg.name }}{{ pkg.version }}{% if not loop.last %} \{% endif %}
+
+{% endfor %}
+{% elif section.manager == 'brew' %}
+          brew install \
+{% for pkg in section.packages %}
+            {{ pkg.name }}{{ pkg.version }}{% if not loop.last %} \{% endif %}
+
+{% endfor %}
+{% elif section.manager == 'pip' %}
+          pip install \
+{% for pkg in section.packages %}
+            {{ pkg.name }}{{ pkg.version }}{% if not loop.last %} \{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% endfor %}

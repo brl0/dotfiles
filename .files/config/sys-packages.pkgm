@@ -1,0 +1,36 @@
+# System packages for Ubuntu base image
+# Installs core utilities, build tools, and system-level packages
+
+[apt/base]
+mode=multi
+pre=apt-get update
+post=apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
+packages = \
+  apt-utils, \
+  build-essential, \
+  curl, \
+  file, \
+  git, \
+  ruby-full, \
+  locales, \
+  sudo, \
+  wget, \
+  unzip, \
+  dbus, \
+  socat, \
+  imagemagick, \
+  libsixel-bin, \
+  bash-completion, \
+  bash-doc, \
+  htop, \
+  btop, \
+  tree, \
+  eza, \
+  bat, \
+  fd-find, \
+  ripgrep, \
+  zoxide, \
+  git-delta, \
+  fzf, \
+  tldr, \
+  jq

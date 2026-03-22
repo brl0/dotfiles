@@ -1,0 +1,87 @@
+FROM ubuntu:latest
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    NONINTERACTIVE=1 \
+    CI=1 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
+
+SHELL ["/bin/bash", "-lc"]
+
+# Install Python3 and essential build tools first (before running manifest scripts)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    apt-utils \
+    python3 \
+    python3-jinja2 \
+    curl \
+    ca-certificates \
+    locales \
+    build-essential && \
+    apt-get clean
+
+# Set up locale
+RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
+
+# Create a non-root user
+ARG USERNAME=ubuntu
+
+# Create user if missing
+RUN id -u "$USERNAME" >/dev/null 2>&1 || \
+    useradd -m -s /bin/bash "$USERNAME" && \
+    mkdir -p /home/"$USERNAME"
+
+# Set the working directory to the user's home directory
+WORKDIR /home/$USERNAME
+
+# Copy package manifest system (for reference/testing)
+COPY .files/pkg-manifest /tmp/dotfiles/.files/pkg-manifest
+COPY .files/config/*.pkgm /tmp/dotfiles/.files/config/
+
+# Install additional system packages as root before switching user
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    fzf \
+    ripgrep \
+    bat \
+    jq \
+    fd-find && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Prepare environment
+RUN mkdir -p /tmp/dotfiles && chown -R $USERNAME:$USERNAME /tmp/dotfiles
+
+# Switch to the non-root user
+USER $USERNAME
+
+# Set PATH
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/$USERNAME/.local/bin:${PATH}"
+
+# NOTE: The following manifests are included for reference but are known to have
+# limitations in containerized environments:
+# - sys-packages.pkgm: apt not available to non-root user after USER switch
+# - brew-packages.pkgm: Homebrew not available on Linux containers
+# - python-packages.pkgm: xpip command has shell quote escaping issues
+# - utility-packages.pkgm: webi/pipx have shell quote escaping issues
+#
+# To use manifests, install as root before USER switch or debug quote escaping.
+# Example (for root operations):
+#   RUN cd /tmp/dotfiles/.files/pkg-manifest && \
+#       python3 install_from_manifest.py <manifest-name> || true
+
+# Install dotfiles
+COPY . /home/$USERNAME/dotfiles/
+
+USER root
+RUN chown -R $USERNAME:$USERNAME /home/$USERNAME/dotfiles
+USER $USERNAME
+
+RUN chmod +x ~/dotfiles/.files/dotphiliac/install_dots.py && \
+    mamba run -a stdout -a stderr python ~/dotfiles/.files/dotphiliac/install_dots.py 2>&1 | \
+    tee /tmp/dotfiles/logs/dotfiles_install.log || true
+
+# Set the default command (can be overridden at runtime)
+CMD ["/bin/bash", "-l"]

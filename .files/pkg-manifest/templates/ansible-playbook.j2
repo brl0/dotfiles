@@ -1,0 +1,71 @@
+---
+# Ansible Playbook for {{ graph.metadata.get('name', 'package-manifest') }}
+# Generated from manifest
+
+- name: Install packages from manifest
+  hosts: all
+  vars:
+    manifest_name: "{{ graph.metadata.get('name', 'package-manifest') }}"
+    manifest_version: "{{ graph.metadata.get('version', '1.0') }}"
+
+  tasks:
+{% for section_name, section in graph.sections.items() %}
+    # =====  {{ section_name }} =====
+{% if 'init' in section.commands %}
+    - name: "{{ section_name }}: Initialize"
+      shell: {{ section.commands['init'] }}
+      when: ansible_os_family is defined
+{% endif %}
+
+{% if 'pre' in section.commands %}
+    - name: "{{ section_name }}: Run pre-command"
+      shell: {{ section.commands['pre'] }}
+      when: ansible_os_family is defined
+{% endif %}
+
+{% if section.manager == 'apt' %}
+    - name: "{{ section_name }}: Update APT cache"
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+      become: yes
+
+    - name: "{{ section_name }}: Install APT packages"
+      apt:
+        name:
+{% for pkg in section.packages %}
+          - {{ pkg.name }}{{ pkg.version }}
+{% endfor %}
+        state: present
+      when: ansible_os_family == "Debian"
+      become: yes
+
+{% elif section.manager == 'brew' %}
+    - name: "{{ section_name }}: Install Homebrew packages"
+      homebrew:
+        name:
+{% for pkg in section.packages %}
+          - {{ pkg.name }}{{ pkg.version }}
+{% endfor %}
+        state: present
+      when: ansible_os_family == "Darwin"
+
+{% elif section.manager == 'pip' %}
+    - name: "{{ section_name }}: Install Python packages"
+      pip:
+        name:
+{% for pkg in section.packages %}
+          - {{ pkg.name }}{{ pkg.version }}
+{% endfor %}
+        state: present
+      when: ansible_python_version is defined
+
+{% endif %}
+
+{% if 'post' in section.commands %}
+    - name: "{{ section_name }}: Run post-command"
+      shell: {{ section.commands['post'] }}
+      when: ansible_os_family is defined
+{% endif %}
+
+{% endfor %}

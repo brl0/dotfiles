@@ -1,0 +1,34 @@
+"""
+Nox sessions for {{ graph.metadata.get('name', 'package-manifest') }}
+Generated from manifest
+"""
+import nox
+
+@nox.session
+def install_base(session):
+    """Install base packages"""
+    session.install(
+{% for pkg in graph.sections.get('base', {}).get('packages', []) %}
+        "{{ pkg.name }}{{ pkg.version }}",
+{% endfor %}
+    )
+
+{% for section_name, section in graph.sections.items() %}
+{% if section.manager == 'pip' %}
+@nox.session
+def install_{{ section_name }}(session):
+    """Install {{ section_name }} packages"""
+{% if 'pre' in section.commands %}
+    session.run_always("{{ section.commands['pre'] }}", external=True)
+{% endif %}
+    session.install(
+{% for pkg in section.packages %}
+        "{{ pkg.name }}{{ pkg.version }}",
+{% endfor %}
+    )
+{% if 'post' in section.commands %}
+    session.run_always("{{ section.commands['post'] }}", external=True)
+{% endif %}
+
+{% endif %}
+{% endfor %}

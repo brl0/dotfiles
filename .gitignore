@@ -14,6 +14,7 @@ __pycache__/
 dask-worker-space/
 monkeytype.sqlite3
 venv/
+.venv/
 
 # Ignore all files under local/
 local/*

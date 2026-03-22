@@ -1,0 +1,193 @@
+#!/bin/bash
+# Idempotent Package Manifest Install Script
+# Generated from {{ graph.metadata.get('name', 'package-manifest') }}
+
+set -o pipefail
+
+# ===== MANIFEST METADATA =====
+{% for section_name, section in graph.sections.items() -%}
+# [{{ section_name }}] - {{ section.manager }}
+{% if section.mode -%}
+# mode={{ section.mode }}
+{% endif -%}
+{% if section.inventory_cmd -%}
+# inventory={{ section.inventory_cmd }}
+{% endif -%}
+{% for key, val in section.metadata.items() -%}
+# @{{ key }}: {{ val }}
+{% endfor -%}
+{% endfor %}
+
+# ===== STATE TRACKING SETUP =====
+project_name="${PROJECT_NAME:-{{ project_name }}}"
+manifest_hash="${MANIFEST_HASH:-{{ manifest_hash }}}"
+force_flag="${FORCE:-{{ 'true' if force else 'false' }}}"
+mode_default="${MODE:-multi}"
+
+# ===== STATE MANAGEMENT FUNCTIONS =====
+{% raw %}
+state_file_path() {
+    local project_name="${1:-pkgm}"
+    echo "$HOME/.${project_name}.pkgm.state"
+}
+
+load_state() {
+    local state_file="$1"
+    if [[ ! -f "$state_file" ]]; then
+        echo "{}"
+        return 0
+    fi
+    cat "$state_file"
+}
+
+save_state() {
+    local state_file="$1"
+    local state_json="$2"
+    mkdir -p "$(dirname "$state_file")"
+    echo "$state_json" > "$state_file.tmp"
+    mv "$state_file.tmp" "$state_file"
+}
+
+check_manifest_hash() {
+    local state_json="$1"
+    local current_hash="$2"
+    local stored_hash
+    stored_hash=$(echo "$state_json" | grep -o '"manifest_hash":"[^"]*"' | cut -d'"' -f4 || echo "")
+    [[ -z "$stored_hash" ]] && return 1
+    [[ "$stored_hash" == "$current_hash" ]] && return 0
+    return 1
+}
+
+get_finished_managers() {
+    local state_json="$1"
+    echo "$state_json" | grep -o '"finished_managers":\s*\[[^\]]*\]' | \
+        sed 's/.*:\s*\[//; s/\].*//' | \
+        tr ',' '\n' | \
+        sed 's/"//g; s/[[:space:]]*//g' | \
+        paste -sd' ' - || echo ""
+}
+
+add_finished_manager() {
+    local state_json="$1"
+    local manager="$2"
+    local old_managers new_managers
+    old_managers=$(get_finished_managers "$state_json")
+    new_managers="$manager"
+    for m in $old_managers; do
+        [[ "$m" != "$manager" ]] && new_managers="$new_managers,$m"
+    done
+    state_json=$(echo "$state_json" | sed 's/"finished_managers":\s*\[[^\]]*\]//')
+    state_json=$(echo "$state_json" | sed 's/,$//')
+    state_json=$(echo "$state_json" | sed "s/}$/,\"finished_managers\":[$(echo "$new_managers" | sed 's/,/\",\"/g; s/^/\"/; s/$/\"/')}/")
+    echo "$state_json"
+}
+
+update_manifest_hash() {
+    local state_json="$1"
+    local manifest_hash="$2"
+    local timestamp="$3"
+    state_json=$(echo "$state_json" | sed 's/"manifest_hash":"[^"]*",*//')
+    state_json=$(echo "$state_json" | sed 's/"timestamp":"[^"]*",*//')
+    state_json=$(echo "$state_json" | sed 's/,\s*}/}/')
+    state_json=$(echo "$state_json" | sed "s/}$/,\"manifest_hash\":\"$manifest_hash\",\"timestamp\":$timestamp}/")
+    echo "$state_json"
+}
+
+initialize_state() {
+    local manifest_hash="$1"
+    local timestamp="$2"
+    echo "{\"manifest_hash\":\"$manifest_hash\",\"timestamp\":$timestamp,\"finished_managers\":[]}"
+}
+{% endraw %}
+
+# ===== MANAGER MODULES =====
+{% for manager_name, manager_code in manager_modules.items() -%}
+# {{ manager_name.upper() }} package installation module
+{{ manager_code }}
+
+{% endfor %}
+
+# ===== MAIN INSTALLATION LOGIC =====
+
+main() {
+    local state_file exit_code overall_status
+    state_file=$(state_file_path "$project_name")
+    exit_code=0
+    overall_status=0
+
+    # Tier 1: Check manifest hash for early exit
+    local current_state finished_managers
+    current_state=$(load_state "$state_file")
+
+{% raw %}
+    if [[ "$force_flag" != "true" && -n "$manifest_hash" ]]; then
+        if check_manifest_hash "$current_state" "$manifest_hash"; then
+            echo "✓ Manifest unchanged (hash match), skipping installation"
+            return 0
+        fi
+    fi
+
+    # Initialize or update state
+    if [[ -z "$(echo "$current_state" | grep -o "manifest_hash")" ]]; then
+        current_state=$(initialize_state "$manifest_hash" "$(date +%s)")
+    else
+        current_state=$(update_manifest_hash "$current_state" "$manifest_hash" "$(date +%s)")
+    fi
+{% endraw %}
+
+{% for section_name, section in graph.sections.items() %}
+{% set mgr = section.manager %}
+{% set mgr_upper = section.manager.upper() %}
+    # === {{ section_name }} ({{ mgr }}) ===
+    echo "→ Installing {{ section_name }}..."
+{% if section.commands.get('pre') %}
+    {{ section.commands['pre'] }} || exit_code=1
+{% endif %}
+
+    # Export configuration
+    export {{ mgr_upper }}_INVENTORY_CMD='{{ section.inventory_cmd | shell_escape }}'
+{% if section.commands.get('init') %}
+    export {{ mgr_upper }}_INIT_CMD='{{ section.commands['init'] }}'
+{% endif %}
+
+    # Build package list
+    local -a {{ mgr }}_pkgs=(
+{%- for pkg in section.packages %}
+        "{{ pkg.name }}{{ pkg.version }}"
+{%- endfor %}
+    )
+
+    # Install packages
+    local {{ mgr }}_exit_status=0
+    local pkgs_ref="{{ mgr }}_pkgs[@]"
+    install_packages "${!pkgs_ref}" || {{ mgr }}_exit_status=$?
+
+    # Handle return status
+    if [[ ${{ mgr }}_exit_status -eq 1 ]]; then
+        echo "✗ Error: Failed to install {{ section_name }}" >&2
+{% if section.mode == 'single' %}
+        return 1
+{% else %}
+        exit_code=1
+{% endif %}
+    elif [[ ${{ mgr }}_exit_status -eq 2 ]]; then
+        overall_status=2
+        current_state=$(add_finished_manager "$current_state" "{{ mgr }}")
+    fi
+
+{% if section.commands.get('post') %}
+    [[ $exit_code -eq 0 ]] && {{ section.commands['post'] }} || exit_code=1
+{% endif %}
+
+{% endfor %}
+{% raw %}
+    # Save final state
+    save_state "$state_file" "$current_state"
+
+    # Return appropriate exit code
+    [[ $exit_code -ne 0 ]] && return 1
+    return $overall_status
+}
+
+main "$@"
+{% endraw %}

@@ -1,0 +1,25 @@
+# Homebrew packages for Linux
+# Installs modern CLI tools and utilities via Homebrew/Linuxbrew
+
+[brew/tools]
+mode=multi
+pre = eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && brew update
+packages = \
+  asdf, \
+  direnv, \
+  fzf, \
+  lsd, \
+  navi, \
+  starship, \
+  gh, \
+  jq, \
+  ripgrep-all, \
+  shellcheck, \
+  shfmt, \
+  sqlfluff, \
+  vale, \
+  micromamba, \
+  nvm, \
+  pkgx, \
+  topgrade, \
+  localai

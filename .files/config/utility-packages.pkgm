@@ -1,0 +1,16 @@
+# Utility and CLI helper packages
+# Installs tools for environment management and package management via webi and pipx
+
+[webi/utilities]
+mode=single
+pre = curl -sS https://webi.sh/webi | sh && source ~/.config/envman/PATH.env
+packages = \
+  aliasman, \
+  dotenv, \
+  dotenv-linter, \
+  pathman
+
+[pipx/tools]
+mode=single
+packages = \
+  pre-commit

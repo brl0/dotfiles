@@ -1,0 +1,147 @@
+# Dockerfile.pkg-manifest-demo
+# Demonstrates using pkg-manifest to generate and execute idempotent package installation scripts
+#
+# Usage:
+#   docker build -f Dockerfile.pkg-manifest-demo -t demo-pkgm:latest .
+#   docker run --rm demo-pkgm:latest
+#
+# This Dockerfile shows the pkg-manifest workflow:
+# 1. Copy the pkg-manifest generator and manager registry
+# 2. Copy the manifest file (pkgs_sys.conf converted to .pkgm format)
+# 3. Use Python to parse the manifest and generate an idempotent install script
+# 4. Execute the generated script
+
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    NONINTERACTIVE=1 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
+
+SHELL ["/bin/bash", "-lc"]
+
+# Set working directory
+WORKDIR /opt/pkg-manifest
+
+# Install Python (required for pkg-manifest generator)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# ============================================================================
+# Step 1: Copy pkg-manifest system files
+# ============================================================================
+# Copy the core generator script
+COPY .files/pkg-manifest/gen.py ./gen.py
+
+# Copy manager registry (defines available package managers: apt, brew, pip, conda, webi)
+COPY .files/pkg-manifest/managers.json ./managers.json
+
+# Copy manager-specific shell modules for idempotent installation
+COPY .files/pkg-manifest/managers/ ./managers/
+
+# Copy Jinja2 templates for generating various output formats
+COPY .files/pkg-manifest/templates/ ./templates/
+
+# ============================================================================
+# Step 2: Copy and prepare manifest file
+# ============================================================================
+# Copy the original .conf file (INI format)
+# Note: .pkgm files are INI-compatible, so we can use .conf files directly
+COPY .files/config/pkgs_sys.conf ./pkgs_sys.conf
+
+# ============================================================================
+# Step 3: Generate installation script from manifest using pkg-manifest
+# ============================================================================
+# This Python script:
+# - Parses pkgs_sys.conf using parse_pkgm()
+# - Generates idempotent install script using emit_install_sh()
+# - Executes the generated script
+RUN python3 << 'PYTHON_SCRIPT'
+#!/usr/bin/env python3
+"""
+Demonstrate pkg-manifest workflow: parse manifest → generate script → execute.
+"""
+import sys
+from pathlib import Path
+
+# Add current directory to path for gen.py import
+sys.path.insert(0, '/opt/pkg-manifest')
+
+from gen import parse_pkgm, emit_install_sh
+
+# Read the manifest file
+manifest_path = Path('/opt/pkg-manifest/pkgs_sys.conf')
+print(f"[pkg-manifest] Reading manifest: {manifest_path}")
+
+with open(manifest_path, 'r') as f:
+    manifest_content = f.read()
+
+# Step 1: Parse manifest into PKG_GRAPH data structure
+print("[pkg-manifest] Parsing manifest into PKG_GRAPH...")
+try:
+    graph = parse_pkgm(manifest_content)
+    print(f"[pkg-manifest] ✓ Parsed {len(graph.sections)} package manager section(s)")
+    for section_name, section in graph.sections.items():
+        print(f"  [{section_name}] manager={section.manager}, packages={len(section.packages)}")
+except Exception as e:
+    print(f"[pkg-manifest] ✗ Parse error: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
+
+# Step 2: Generate idempotent installation script
+print("[pkg-manifest] Generating installation script via emit_install_sh()...")
+try:
+    install_script = emit_install_sh(
+        graph,
+        project_name='pkgm-demo',
+        manifest_str=manifest_content
+    )
+    script_lines = install_script.split('\n')
+    print(f"[pkg-manifest] ✓ Generated {len(script_lines)} lines of bash script")
+
+    # Save script for inspection
+    script_path = Path('/tmp/generated-install.sh')
+    with open(script_path, 'w') as f:
+        f.write(install_script)
+    print(f"[pkg-manifest] Saved to {script_path}")
+except Exception as e:
+    print(f"[pkg-manifest] ✗ Generation error: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
+
+# Step 3: Execute the generated script
+print("[pkg-manifest] Executing generated installation script...")
+print(f"[pkg-manifest] {'='*70}")
+
+import subprocess
+result = subprocess.run(
+    ['bash', '-c', install_script],
+    capture_output=False,
+    text=True
+)
+
+print(f"[pkg-manifest] {'='*70}")
+if result.returncode == 0:
+    print("[pkg-manifest] ✓ Installation completed successfully (exit code: 0)")
+elif result.returncode == 2:
+    print("[pkg-manifest] ✓ Installation completed with changes (exit code: 2)")
+else:
+    print(f"[pkg-manifest] ⚠ Installation completed with exit code: {result.returncode}")
+
+sys.exit(result.returncode)
+PYTHON_SCRIPT
+
+# ============================================================================
+# Step 4: Verify installation by listing some installed packages
+# ============================================================================
+RUN echo "[pkg-manifest] Verifying installation..." && \
+    apt list --installed 2>/dev/null | head -20 && \
+    echo "[pkg-manifest] ✓ Package verification complete"
+
+# Set the default command
+CMD ["/bin/bash", "-l"]

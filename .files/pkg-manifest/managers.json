@@ -1,0 +1,58 @@
+{
+    "apt": {
+        "name": "apt",
+        "description": "APT package manager (Debian/Ubuntu)",
+        "inventory_cmd": "apt list --installed 2>/dev/null",
+        "install_cmd": "apt-get install -y",
+        "platforms": [
+            "linux",
+            "debian",
+            "ubuntu"
+        ],
+        "os_check": "command -v apt-get &>/dev/null"
+    },
+    "brew": {
+        "name": "brew",
+        "description": "Homebrew package manager (macOS)",
+        "inventory_cmd": "brew list 2>/dev/null",
+        "install_cmd": "brew install",
+        "platforms": [
+            "macos",
+            "darwin"
+        ],
+        "os_check": "command -v brew &>/dev/null"
+    },
+    "pip": {
+        "name": "pip",
+        "description": "Python package installer",
+        "inventory_cmd": "pip list 2>/dev/null",
+        "install_cmd": "pip install",
+        "platforms": [
+            "linux",
+            "macos",
+            "windows"
+        ],
+        "os_check": "command -v pip &>/dev/null"
+    },
+    "conda": {
+        "name": "conda",
+        "description": "Conda package manager",
+        "inventory_cmd": "conda list 2>/dev/null",
+        "install_cmd": "conda install -y",
+        "platforms": [
+            "linux",
+            "macos",
+            "windows"
+        ],
+        "os_check": "command -v conda &>/dev/null"
+    },
+    "webi": {
+        "name": "webi",
+        "description": "Webi installer (alternative installers)",
+        "platforms": [
+            "linux",
+            "macos"
+        ],
+        "os_check": "command -v webi &>/dev/null"
+    }
+}
