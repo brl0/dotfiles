@@ -217,6 +217,25 @@ packages:
     assert "# @tags:" in install_sh
 
 
+# Phase 10: Environment Variable Interpolation
+def test_env_var_interpolation():
+    import os
+    original = os.environ.get("TEST_PKG_PREFIX")
+    os.environ["TEST_PKG_PREFIX"] = "custom"
+    try:
+        manifest = "[apt/base]\npackages:\n  ${TEST_PKG_PREFIX}-tools\n  $TEST_PKG_PREFIX-utils\n# @tags: ${TEST_PKG_PREFIX}-tools=base"
+        graph = parse_pkgm(manifest)
+        pkgs = graph.sections["apt/base"].packages
+        assert pkgs[0].name == "custom-tools"
+        assert pkgs[1].name == "custom-utils"
+        assert "custom-tools=base" in graph.sections["apt/base"].metadata.get("tags", "")
+    finally:
+        if original is None:
+            del os.environ["TEST_PKG_PREFIX"]
+        else:
+            os.environ["TEST_PKG_PREFIX"] = original
+
+
 # Run all tests
 print("Running Package Manifest Generator Tests\n" + "=" * 50)
 
@@ -234,6 +253,7 @@ test("test_package_diff", test_package_diff_basic)
 test("test_lock_file", test_lock_file_consumption)
 test("test_manifest_round_trip", test_manifest_round_trip)
 test("test_artifact_metadata", test_artifact_metadata_shell)
+test("test_env_var_interpolation", test_env_var_interpolation)
 
 print("\n" + "=" * 50)
 print(f"✓ Passed: {passed}")

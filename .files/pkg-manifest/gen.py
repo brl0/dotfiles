@@ -5,6 +5,7 @@ import hashlib
 import configparser
 import copy
 import json
+import os
 from pathlib import Path
 
 try:
@@ -204,6 +205,9 @@ def get_manager_registry() -> ManagerRegistry:
 
 def parse_pkgm(manifest_str: str) -> PKG_GRAPH:
     """Parse .pkgm manifest into PKG_GRAPH."""
+    # Expand environment variables mathematically (Phase 10)
+    manifest_str = os.path.expandvars(manifest_str)
+
     graph = PKG_GRAPH()
     config = configparser.ConfigParser()
     config.read_string(manifest_str)

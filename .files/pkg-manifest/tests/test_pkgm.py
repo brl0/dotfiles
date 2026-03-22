@@ -521,6 +521,33 @@ packages:
         assert manifest_hash in install_sh or "# Manifest hash:" in install_sh
 
 
+# ============================================================================
+# PHASE 10: Environment Variable Interpolation
+# ============================================================================
+
+
+class TestEnvVarInterpolation:
+    """Phase 10: Environment variable interpolation"""
+
+    def test_env_var_interpolation(self):
+        """Environment variables like $USER or ${HOME} are expanded in the manifest"""
+        import os
+        original = os.environ.get("TEST_PKG_PREFIX")
+        os.environ["TEST_PKG_PREFIX"] = "custom"
+        try:
+            manifest = "[apt/base]\npackages:\n  ${TEST_PKG_PREFIX}-tools\n  $TEST_PKG_PREFIX-utils\n# @tags: ${TEST_PKG_PREFIX}-tools=base"
+            graph = parse_pkgm(manifest)
+            pkgs = graph.sections["apt/base"].packages
+            assert pkgs[0].name == "custom-tools"
+            assert pkgs[1].name == "custom-utils"
+            assert "custom-tools=base" in graph.sections["apt/base"].metadata.get("tags", "")
+        finally:
+            if original is None:
+                del os.environ["TEST_PKG_PREFIX"]
+            else:
+                os.environ["TEST_PKG_PREFIX"] = original
+
+
 if __name__ == "__main__":
     # Run with: pytest tests/test_pkgm.py -v
     pytest.main([__file__, "-v"])
