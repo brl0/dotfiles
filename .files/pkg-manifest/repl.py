@@ -17,6 +17,8 @@ class PkgmREPL(cmd.Cmd):
     def __init__(self):
         super().__init__()
         self.graph = PKG_GRAPH()
+        from access import AccessManager
+        self.access = AccessManager()
 
     def do_load(self, arg):
         """load [file_path]\nLoad an established .pkgm manifest into the active session."""
@@ -51,6 +53,10 @@ class PkgmREPL(cmd.Cmd):
 
     def do_add(self, arg):
         """add [manager_section] [pkg]\nAdd a package to the specified manager section (e.g., 'add apt/base curl')."""
+        if not self.access.check_permission("developer", "add package"):
+            print("Access Denied: You need at least 'developer' role to add packages.")
+            return
+            
         parts = arg.split()
         if len(parts) < 2:
             print("Usage: add <manager_section> <pkg> [version]")
@@ -75,6 +81,10 @@ class PkgmREPL(cmd.Cmd):
 
     def do_remove(self, arg):
         """remove [manager_section] [pkg]\nRemove a package from the specified manager section."""
+        if not self.access.check_permission("developer", "remove package"):
+            print("Access Denied: You need at least 'developer' role to remove packages.")
+            return
+
         parts = arg.split()
         if len(parts) < 2:
             print("Usage: remove <manager_section> <pkg>")
@@ -98,6 +108,10 @@ class PkgmREPL(cmd.Cmd):
 
     def do_save(self, arg):
         """save [file_path]\nSave the active session's manifest to a .pkgm file."""
+        if not self.access.check_permission("developer", "save manifest"):
+            print("Access Denied: You need at least 'developer' role to save manifests.")
+            return
+            
         if not arg:
             print("Please provide a file name to save to.")
             return
@@ -107,11 +121,16 @@ class PkgmREPL(cmd.Cmd):
             with open(arg, "w") as f:
                 f.write(content)
             print(f"Successfully saved manifest to '{arg}'.")
+            self.access.log_audit("SAVE_MANIFEST", f"Saved to '{arg}'")
         except Exception as e:
             print(f"Failed to save manifest: {e}")
 
     def do_install(self, arg):
         """install\nInstall the current manifest state to the local system by compiling an installation shell script."""
+        if not self.access.check_permission("admin", "install system packages"):
+            print("Access Denied: You need 'admin' role to install packages to the system.")
+            return
+            
         from gen import emit_install_sh
         import subprocess
         import tempfile
@@ -127,6 +146,7 @@ class PkgmREPL(cmd.Cmd):
             subprocess.run(["/bin/bash", tmp_path], check=False)
             os.remove(tmp_path)
             print("Installation complete.")
+            self.access.log_audit("INSTALL", "(via REPL compiled script)")
         except Exception as e:
             print(f"Installation failed: {e}")
 
@@ -162,6 +182,30 @@ class PkgmREPL(cmd.Cmd):
                 print("Signature verification failed.")
         except FileNotFoundError:
             print("Error: gpg command not found on system.")
+
+    def do_scan(self, arg):
+        """scan\nScan the loaded manifest for vulnerabilities using the OSV database."""
+        if not self.graph.sections:
+            print("Manifest is currently empty. Use 'add' or 'load' to populate it before scanning.")
+            return
+
+        from scanner import scan_graph
+        print("Scanning packages for known vulnerabilities (this may take a moment)...")
+        vulns = scan_graph(self.graph)
+        
+        if not vulns:
+            print("✅ No vulnerabilities found!")
+            return
+            
+        print("\n⚠️  Vulnerabilities Detected:")
+        for pkg, issues in vulns.items():
+            print(f"\n📦 {pkg}")
+            for issue in issues:
+                issue_id = issue.get("id", "Unknown ID")
+                # Fallbacks for details: summary -> details -> simple description
+                details = issue.get("summary", issue.get("details", "No detailed description available."))
+                print(f"  - {issue_id}: {details}")
+        print()
 
     def do_quit(self, arg):
         """quit\nExit the REPL session."""

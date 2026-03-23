@@ -43,6 +43,13 @@ def install_from_manifest(
         print(f"❌ Error: Manifest file not found: {manifest_path}", file=sys.stderr)
         return 1
 
+    # Security: Access Control Validation
+    from access import AccessManager
+    access = AccessManager()
+    if not access.check_permission("admin", f"install {manifest_name}"):
+        print(f"❌ Error: Access Denied. Requires 'admin' role to install packages to the system.", file=sys.stderr)
+        return 1
+    
     if enforce_signature:
         sig_path = Path(str(manifest_path) + ".asc")
         if not sig_path.exists():
@@ -75,11 +82,13 @@ def install_from_manifest(
 
         if result.returncode == 0:
             print(f"✅ Successfully installed from {manifest_name}", file=sys.stderr)
+            access.log_audit("INSTALL", f"Manifest: {manifest_name} (Success)")
         else:
             print(
                 f"⚠️  Installation from {manifest_name} completed with exit code {result.returncode}",
                 file=sys.stderr,
             )
+            access.log_audit("INSTALL", f"Manifest: {manifest_name} (Failed with code {result.returncode})")
 
         return result.returncode
 

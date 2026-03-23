@@ -1,0 +1,28 @@
+name: 'pkg-manifest Execute Action'
+description: 'Install software defined in .pkgm manifests natively via the pkg-manifest orchestrator.'
+inputs:
+  manifest_file:
+    description: 'Path/Filename to the manifest .pkgm file'
+    required: true
+  manifest_dir:
+    description: 'Base directory carrying the manifest file'
+    required: false
+    default: '.'
+  enforce_signature:
+    description: 'Whether to strictly verify the detached GPG signature (.asc) of the manifest.'
+    required: false
+    default: 'false'
+runs:
+  using: "composite"
+  steps:
+    - name: Set Orchestrator Permissions
+      run: chmod +x ${{ github.action_path }}/install_from_manifest.py
+      shell: bash
+    - name: Deploy Packages Native
+      run: |
+        ENFORCE=""
+        if [[ "${{ inputs.enforce_signature }}" == "true" ]]; then
+          ENFORCE="--enforce-signature"
+        fi
+        python3 ${{ github.action_path }}/install_from_manifest.py ${{ inputs.manifest_file }} ${{ inputs.manifest_dir }} $ENFORCE
+      shell: bash

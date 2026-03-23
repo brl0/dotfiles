@@ -54,5 +54,44 @@
             "macos"
         ],
         "os_check": "command -v webi &>/dev/null"
+    },
+    "docker": {
+        "name": "docker",
+        "description": "Docker container image manager",
+        "inventory_cmd": "docker images --format '{{.Repository}}:{{.Tag}}' 2>/dev/null",
+        "install_cmd": "docker pull",
+        "platforms": [
+            "linux",
+            "macos",
+            "windows"
+        ],
+        "os_check": "command -v docker &>/dev/null"
+    },
+    "source": {
+        "name": "source",
+        "description": "Source-based package installer",
+        "inventory_cmd": "ls -1 ~/.pkgm/source_installs 2>/dev/null",
+        "install_cmd": "source-install",
+        "platforms": [
+            "linux",
+            "macos"
+        ],
+        "os_check": "command -v curl &>/dev/null && command -v tar &>/dev/null"
+    },
+    "snap": {
+        "name": "snap",
+        "description": "Snapcraft package manager",
+        "inventory_cmd": "snap list | awk 'NR>1 {print $1}' 2>/dev/null",
+        "install_cmd": "snap install",
+        "platforms": ["linux"],
+        "os_check": "command -v snap &>/dev/null"
+    },
+    "flatpak": {
+        "name": "flatpak",
+        "description": "Flatpak application distribution",
+        "inventory_cmd": "flatpak list --app --columns=application 2>/dev/null",
+        "install_cmd": "flatpak install -y",
+        "platforms": ["linux"],
+        "os_check": "command -v flatpak &>/dev/null"
     }
 }
