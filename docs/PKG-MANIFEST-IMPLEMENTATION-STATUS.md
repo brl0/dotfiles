@@ -243,6 +243,8 @@ Utility Module .................... 93.2%
 | Template System        | 8     | ✅          | ✅     | ✅         |
 | Documentation          | 9     | ✅          | ✅     | ✅         |
 | Env Var Interpolation  | 10    | ✅          | ✅     | ✅         |
+| Condition-Based Select | 10    | ✅          | ✅     | ✅         |
+| Interactive CLI Mode   | 10    | ✅          | ✅     | ✅         |
 
 ---
 

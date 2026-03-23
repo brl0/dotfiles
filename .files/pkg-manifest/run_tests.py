@@ -235,6 +235,22 @@ def test_env_var_interpolation():
         else:
             os.environ["TEST_PKG_PREFIX"] = original
 
+def test_condition_based_selection():
+    import sys
+    manifest_incl = f"""[apt/base]
+packages:
+  curl
+# @condition(curl): sys.platform == '{sys.platform}'"""
+    graph_incl = parse_pkgm(manifest_incl)
+    assert len(graph_incl.sections["apt/base"].packages) == 1
+
+    manifest_excl = """[apt/base]
+packages:
+  curl
+# @condition(curl): sys.platform == 'non_existent_os'"""
+    graph_excl = parse_pkgm(manifest_excl)
+    assert len(graph_excl.sections["apt/base"].packages) == 0
+
 
 # Run all tests
 print("Running Package Manifest Generator Tests\n" + "=" * 50)
@@ -254,6 +270,15 @@ test("test_lock_file", test_lock_file_consumption)
 test("test_manifest_round_trip", test_manifest_round_trip)
 test("test_artifact_metadata", test_artifact_metadata_shell)
 test("test_env_var_interpolation", test_env_var_interpolation)
+test("test_condition_based_selection", test_condition_based_selection)
+
+# Add REPL tests
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "tests"))
+from test_repl import test_repl_add, test_repl_remove
+test("test_repl_add", test_repl_add)
+test("test_repl_remove", test_repl_remove)
 
 print("\n" + "=" * 50)
 print(f"✓ Passed: {passed}")

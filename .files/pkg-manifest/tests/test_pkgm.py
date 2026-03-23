@@ -548,6 +548,30 @@ class TestEnvVarInterpolation:
                 os.environ["TEST_PKG_PREFIX"] = original
 
 
+class TestConditionBasedSelection:
+    """Phase 10: Condition-based package selection"""
+
+    def test_condition_based_selection_included(self):
+        import sys
+        manifest = f"""[apt/base]
+packages:
+  curl
+# @condition(curl): sys.platform == '{sys.platform}'"""
+        graph = parse_pkgm(manifest)
+        pkgs = graph.sections["apt/base"].packages
+        assert len(pkgs) == 1
+        assert pkgs[0].name == "curl"
+
+    def test_condition_based_selection_excluded(self):
+        manifest = """[apt/base]
+packages:
+  curl
+# @condition(curl): sys.platform == 'non_existent_os'"""
+        graph = parse_pkgm(manifest)
+        pkgs = graph.sections["apt/base"].packages
+        assert len(pkgs) == 0
+
+
 if __name__ == "__main__":
     # Run with: pytest tests/test_pkgm.py -v
     pytest.main([__file__, "-v"])

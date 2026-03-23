@@ -254,6 +254,23 @@ def parse_pkgm(manifest_str: str) -> PKG_GRAPH:
 
         graph.sections[section_name] = section
 
+    # Evaluate package conditions (Phase 10: Condition-Based Selection)
+    import sys
+    env_locals = {"sys": sys, "os": os}
+    for section in graph.sections.values():
+        filtered_packages = []
+        for pkg in section.packages:
+            cond_key = f"condition({pkg.name})"
+            if cond_key in section.metadata:
+                expr = section.metadata[cond_key]
+                try:
+                    if not eval(expr, {"__builtins__": {}}, env_locals):
+                        continue
+                except Exception as e:
+                    raise ValueError(f"Failed to evaluate condition '{expr}' for package '{pkg.name}': {e}")
+            filtered_packages.append(pkg)
+        section.packages = filtered_packages
+
     return graph
 
 
