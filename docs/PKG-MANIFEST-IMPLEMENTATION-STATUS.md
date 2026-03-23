@@ -245,6 +245,7 @@ Utility Module .................... 93.2%
 | Env Var Interpolation  | 10    | ✅          | ✅     | ✅         |
 | Condition-Based Select | 10    | ✅          | ✅     | ✅         |
 | Interactive CLI Mode   | 10    | ✅          | ✅     | ✅         |
+| Artifact Signing       | 11    | ✅          | ✅     | ✅         |
 
 ---
 

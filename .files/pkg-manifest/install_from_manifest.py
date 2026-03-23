@@ -18,7 +18,8 @@ from gen import parse_pkgm, emit_install_sh
 
 
 def install_from_manifest(
-    manifest_name: str, manifest_dir: str = "/tmp/dotfiles/.files/config"
+    manifest_name: str, manifest_dir: str = "/tmp/dotfiles/.files/config",
+    enforce_signature: bool = False
 ) -> int:
     """
     Parse a manifest file and execute the generated install script.
@@ -41,6 +42,19 @@ def install_from_manifest(
     if not manifest_path.exists():
         print(f"❌ Error: Manifest file not found: {manifest_path}", file=sys.stderr)
         return 1
+
+    if enforce_signature:
+        sig_path = Path(str(manifest_path) + ".asc")
+        if not sig_path.exists():
+            print(f"❌ Error: Enforced signature file not found: {sig_path}", file=sys.stderr)
+            return 1
+            
+        print(f"🔐 Verifying GPG signature for {manifest_name}...", file=sys.stderr)
+        verify_result = subprocess.run(["gpg", "--verify", str(sig_path), str(manifest_path)], check=False)
+        if verify_result.returncode != 0:
+            print("❌ Error: GPG verification failed!", file=sys.stderr)
+            return 1
+        print("✅ GPG Signature verified.", file=sys.stderr)
 
     try:
         # Read manifest
@@ -87,12 +101,15 @@ def install_from_manifest(
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    enforce_signature = "--enforce-signature" in sys.argv
+    args = [a for a in sys.argv[1:] if a != "--enforce-signature"]
+    
+    if len(args) < 1:
         print(__doc__, file=sys.stderr)
         sys.exit(1)
 
-    manifest_name = sys.argv[1]
-    manifest_dir = sys.argv[2] if len(sys.argv) > 2 else "/tmp/dotfiles/.files/config"
+    manifest_name = args[0]
+    manifest_dir = args[1] if len(args) > 1 else "/tmp/dotfiles/.files/config"
 
-    exit_code = install_from_manifest(manifest_name, manifest_dir)
+    exit_code = install_from_manifest(manifest_name, manifest_dir, enforce_signature)
     sys.exit(exit_code)

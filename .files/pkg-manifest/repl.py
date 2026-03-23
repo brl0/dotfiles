@@ -130,6 +130,39 @@ class PkgmREPL(cmd.Cmd):
         except Exception as e:
             print(f"Installation failed: {e}")
 
+    def do_sign(self, arg):
+        """sign [file_path]\nGenerate a GPG detachment signature (.asc) for the specified manifest file."""
+        if not arg:
+            print("Please provide the file path of the manifest to sign.")
+            return
+            
+        import subprocess
+        try:
+            print(f"Signing '{arg}' with GPG...")
+            subprocess.run(["gpg", "--detach-sign", "--armor", arg], check=True)
+            print(f"Signature created at '{arg}.asc'.")
+        except subprocess.CalledProcessError as e:
+            print(f"GPG signing failed: {e}")
+        except FileNotFoundError:
+            print("Error: gpg command not found on system.")
+
+    def do_verify(self, arg):
+        """verify [file_path]\nVerify a GPG detachment signature for the specified manifest file."""
+        if not arg:
+            print("Please provide the file path of the manifest to verify.")
+            return
+            
+        import subprocess
+        try:
+            print(f"Verifying '{arg}'...")
+            result = subprocess.run(["gpg", "--verify", f"{arg}.asc", arg], check=False)
+            if result.returncode == 0:
+                print("Signature verified successfully.")
+            else:
+                print("Signature verification failed.")
+        except FileNotFoundError:
+            print("Error: gpg command not found on system.")
+
     def do_quit(self, arg):
         """quit\nExit the REPL session."""
         print("Exiting pkg-manifest REPL. Goodbye.")

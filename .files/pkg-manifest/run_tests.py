@@ -280,6 +280,13 @@ from test_repl import test_repl_add, test_repl_remove
 test("test_repl_add", test_repl_add)
 test("test_repl_remove", test_repl_remove)
 
+# Add Security tests
+from test_security import test_repl_sign_verify, test_install_enforce_signature_missing_file, test_install_enforce_signature_verify_success, test_install_enforce_signature_verify_fail
+test("test_repl_sign_verify", test_repl_sign_verify)
+test("test_install_enforce_signature_missing_file", test_install_enforce_signature_missing_file)
+test("test_install_enforce_signature_verify_success", test_install_enforce_signature_verify_success)
+test("test_install_enforce_signature_verify_fail", test_install_enforce_signature_verify_fail)
+
 print("\n" + "=" * 50)
 print(f"✓ Passed: {passed}")
 if failed > 0:
