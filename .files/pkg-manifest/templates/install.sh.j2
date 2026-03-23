@@ -136,6 +136,7 @@ main() {
 {% endraw %}
 
 {% for section_name, section in graph.sections.items() %}
+{% if not section_filter or section_name in section_filter %}
 {% set mgr = section.manager %}
 {% set mgr_upper = section.manager.upper() %}
     # === {{ section_name }} ({{ mgr }}) ===
@@ -178,12 +179,18 @@ main() {
 {% if section.commands.get('post') %}
     [[ $exit_code -eq 0 ]] && {{ section.commands['post'] }} || exit_code=1
 {% endif %}
+{% endif %}
 
 {% endfor %}
 {% raw %}
+{% endraw %}
+{% if not skip_state %}
+{% raw %}
     # Save final state
     save_state "$state_file" "$current_state"
-
+{% endraw %}
+{% endif %}
+{% raw %}
     # Return appropriate exit code
     [[ $exit_code -ne 0 ]] && return 1
     return $overall_status

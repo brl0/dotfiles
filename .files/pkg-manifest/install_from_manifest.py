@@ -19,7 +19,8 @@ from gen import parse_pkgm, emit_install_sh
 
 def install_from_manifest(
     manifest_name: str, manifest_dir: str = "/tmp/dotfiles/.files/config",
-    enforce_signature: bool = False
+    enforce_signature: bool = False,
+    parallel: bool = False,
 ) -> int:
     """
     Parse a manifest file and execute the generated install script.
@@ -72,25 +73,37 @@ def install_from_manifest(
         # Parse manifest to PKG_GRAPH
         graph = parse_pkgm(manifest_content)
 
-        print(f"📦 Generating install script from {manifest_name}...", file=sys.stderr)
-        # Generate install script
-        script = emit_install_sh(graph, manifest_name.replace(".pkgm", ""))
+        if parallel:
+            from runner import ParallelRunner
+            print(f"📦 Installing from {manifest_name} in parallel...", file=sys.stderr)
+            runner = ParallelRunner(
+                graph,
+                project_name=manifest_name.replace(".pkgm", ""),
+                manifest_str=manifest_content,
+                force=False
+            )
+            returncode = runner.run()
+        else:
+            print(f"📦 Generating install script from {manifest_name}...", file=sys.stderr)
+            # Generate install script
+            script = emit_install_sh(graph, manifest_name.replace(".pkgm", ""))
 
-        print(f"📦 Installing from {manifest_name}...", file=sys.stderr)
-        # Execute the generated script
-        result = subprocess.run(["/bin/bash", "-c", script], check=False)
+            print(f"📦 Installing from {manifest_name}...", file=sys.stderr)
+            # Execute the generated script
+            result = subprocess.run(["/bin/bash", "-c", script], check=False)
+            returncode = result.returncode
 
-        if result.returncode == 0:
+        if returncode in (0, 2):
             print(f"✅ Successfully installed from {manifest_name}", file=sys.stderr)
-            access.log_audit("INSTALL", f"Manifest: {manifest_name} (Success)")
+            access.log_audit("INSTALL", f"Manifest: {manifest_name} (Success with status {returncode})")
+            return 0 if returncode == 0 else 2
         else:
             print(
-                f"⚠️  Installation from {manifest_name} completed with exit code {result.returncode}",
+                f"⚠️  Installation from {manifest_name} completed with exit code {returncode}",
                 file=sys.stderr,
             )
-            access.log_audit("INSTALL", f"Manifest: {manifest_name} (Failed with code {result.returncode})")
-
-        return result.returncode
+            access.log_audit("INSTALL", f"Manifest: {manifest_name} (Failed with code {returncode})")
+            return returncode
 
     except RecursionError as e:
         print(f"❌ RecursionError in {manifest_name}: {e}", file=sys.stderr)
@@ -111,7 +124,9 @@ def install_from_manifest(
 
 if __name__ == "__main__":
     enforce_signature = "--enforce-signature" in sys.argv
-    args = [a for a in sys.argv[1:] if a != "--enforce-signature"]
+    parallel = "--parallel" in sys.argv
+    
+    args = [a for a in sys.argv[1:] if a not in ("--enforce-signature", "--parallel")]
     
     if len(args) < 1:
         print(__doc__, file=sys.stderr)
@@ -120,5 +135,5 @@ if __name__ == "__main__":
     manifest_name = args[0]
     manifest_dir = args[1] if len(args) > 1 else "/tmp/dotfiles/.files/config"
 
-    exit_code = install_from_manifest(manifest_name, manifest_dir, enforce_signature)
+    exit_code = install_from_manifest(manifest_name, manifest_dir, enforce_signature, parallel)
     sys.exit(exit_code)

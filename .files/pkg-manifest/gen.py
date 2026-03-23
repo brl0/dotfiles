@@ -491,6 +491,8 @@ def emit_install_sh(
     project_name: str = "pkgm",
     force: bool = False,
     manifest_str: str = "",
+    skip_state: bool = False,
+    section_filter: list[str] | None = None,
 ) -> str:
     """Emit PKG_GRAPH as idempotent install shell script using template.
 
@@ -510,6 +512,8 @@ def emit_install_sh(
             project_name=project_name,
             force=force,
             manifest_str=manifest_str,
+            skip_state=skip_state,
+            section_filter=section_filter,
         )
 
     # Check if templates exist
@@ -520,6 +524,8 @@ def emit_install_sh(
             project_name=project_name,
             force=force,
             manifest_str=manifest_str,
+            skip_state=skip_state,
+            section_filter=section_filter,
         )
 
     # Use template-based rendering
@@ -529,6 +535,8 @@ def emit_install_sh(
         project_name=project_name,
         force=force,
         manifest_str=manifest_str,
+        skip_state=skip_state,
+        section_filter=section_filter,
     )
 
 
@@ -537,6 +545,8 @@ def _emit_install_sh_direct(
     project_name: str = "pkgm",
     force: bool = False,
     manifest_str: str = "",
+    skip_state: bool = False,
+    section_filter: list[str] | None = None,
 ) -> str:
     """Generate basic install.sh script without templates (fallback).
 
@@ -576,6 +586,9 @@ def _emit_install_sh_direct(
 
     # Install per manager section
     for section_name, section in graph.sections.items():
+        if section_filter and section_name not in section_filter:
+            continue
+            
         manager = section.manager
         lines.append(f"# Section: [{section_name}] (manager={manager})")
 
@@ -603,13 +616,19 @@ def _emit_install_sh_direct(
         lines.append("")
 
     # Update state file
+    if not skip_state:
+        lines.extend(
+            [
+                "# Save state for next run",
+                'mkdir -p "$(dirname "$STATE_FILE")"',
+                'cat > "$STATE_FILE" <<STATE',
+                f"manifest_hash={manifest_hash}",
+                "STATE",
+            ]
+        )
+    
     lines.extend(
         [
-            "# Save state for next run",
-            'mkdir -p "$(dirname "$STATE_FILE")"',
-            'cat > "$STATE_FILE" <<STATE',
-            f"manifest_hash={manifest_hash}",
-            "STATE",
             "",
             "echo '[info] Installation complete'",
             "exit 0",
@@ -640,6 +659,8 @@ def render_template(
     project_name: str = "pkgm",
     force: bool = False,
     manifest_str: str = "",
+    skip_state: bool = False,
+    section_filter: list[str] | None = None,
 ) -> str:
     """Render PKG_GRAPH as specified format using Jinja2 templates.
 
@@ -656,6 +677,8 @@ def render_template(
             project_name,
             force,
             manifest_str,
+            skip_state,
+            section_filter,
         )
 
     templates_dir = get_template_directory()
@@ -667,6 +690,8 @@ def render_template(
             project_name,
             force,
             manifest_str,
+            skip_state,
+            section_filter,
         )
 
     # Set up Jinja2 environment
@@ -726,6 +751,8 @@ def render_template(
         "manifest_hash": manifest_hash,
         "force": str(force).lower(),
         "manager_modules": manager_modules,
+        "skip_state": skip_state,
+        "section_filter": section_filter,
     }
 
     return template.render(context)
@@ -737,12 +764,14 @@ def _render_format_fallback(
     project_name: str = "pkgm",
     force: bool = False,
     manifest_str: str = "",
+    skip_state: bool = False,
+    section_filter: list[str] | None = None,
 ) -> str:
     """Fallback rendering using hardcoded functions."""
     format_lower = format_name.lower()
 
     if format_lower in ("install.sh", "shell", "bash"):
-        return emit_install_sh(graph, project_name, force, manifest_str)
+        return emit_install_sh(graph, project_name, force, manifest_str, skip_state, section_filter)
     if format_lower in ("dockerfile", "docker"):
         return emit_dockerfile(graph)
     if format_lower in ("ansible", "ansible-playbook"):
