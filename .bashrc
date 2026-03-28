@@ -7,8 +7,8 @@ echo 'processing ~/.bashrc'
 
 # If not running interactively, don't do anything
 case $- in
-*i*) ;;
-*) return ;;
+    *i*) ;;
+    *) return ;;
 esac
 
 # Function to source a file if it exists
@@ -28,9 +28,9 @@ shopt -s histappend
 
 if [ -f "$HOME/dotfiles/.brl/shopts.txt" ]; then
     BRL_OPTS=$(
-        grep -vxE '[[:blank:]]*([#;].*)?' "$HOME/dotfiles/.brl/shopts.txt" |
-            grep -o '^[^#]*' |
-            sort -u | xargs echo
+        grep -vxE '[[:blank:]]*([#;].*)?' "$HOME/dotfiles/.brl/shopts.txt" \
+            | grep -o '^[^#]*' \
+            | sort -u | xargs echo
     )
     shopt -s $BRL_OPTS
 fi
@@ -60,7 +60,7 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-xterm-color | *-256color) color_prompt=yes ;;
+    xterm-color | *-256color) color_prompt=yes ;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -88,10 +88,10 @@ unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
-xterm* | rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*) ;;
+    xterm* | rxvt*)
+        PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+        ;;
+    *) ;;
 
 esac
 
@@ -225,6 +225,18 @@ PATH=$(echo "$PATH" | sed 's/:/\n/g' | awk '!x[$0]++' | xargs -i -n 1 echo "::{}
 export PATH
 
 export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+
+# PATH Updates
+[ -s "/home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh" ] && \. "/home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh"
+export NVM_DIR="$HOME/.nvm"
+[ -s "/home/linuxbrew/.linuxbrew/opt/nvm/nvm.sh" ] && \. "/home/linuxbrew/.linuxbrew/opt/nvm/nvm.sh"                                       # This loads nvm
+[ -s "/home/linuxbrew/.linuxbrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/home/linuxbrew/.linuxbrew/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
+if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile.d/nix.sh; fi                                              # added by Nix installer
+# PATH=$PATH:$(go env GOPATH)/bin
+# /PATH Updates
+
+# Set PATH, MANPATH, etc., for Homebrew.
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # >>> mamba initialize >>>
 # !! Contents within this block are managed by 'mamba init' !!
