@@ -180,6 +180,19 @@ export PATH
 
 # export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
 
+# PATH Updates
+[ -s "/home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh" ] && \. "/home/linuxbrew/.linuxbrew/opt/asdf/libexec/asdf.sh"
+export NVM_DIR="$HOME/.nvm"
+[ -s "/home/linuxbrew/.linuxbrew/opt/nvm/nvm.sh" ] && \. "/home/linuxbrew/.linuxbrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/home/linuxbrew/.linuxbrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/home/linuxbrew/.linuxbrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+# PATH=$PATH:$(go env GOPATH)/bin
+# /PATH Updates
+
+# Set PATH, MANPATH, etc., for Homebrew.
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+
 # # >>> mamba initialize >>>
 # # !! Contents within this block are managed by 'mamba init' !!
 # export MAMBA_EXE="$HOME/.local/bin/micromamba"

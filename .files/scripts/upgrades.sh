@@ -18,7 +18,7 @@ brew unlink python3.10
 brew unlink python3.11
 
 topgrade --disable conda --show-skipped -v -y
-mamba update --no-banner -n base -y --all
-mamba update --no-banner -n brl -y --all
+mamba update -n base -y --all
+mamba update -n brl -y --all
 
 echo 'Upgrades complete.'
